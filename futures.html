@@ -56,7 +56,7 @@
 
     <!-- Top Tabs -->
     <div class="px-4 pt-4 pb-2 flex items-center border-b border-gray-100">
-        <div class="mr-6 border-b-2 border-yellow-custom pb-1 font-bold text-gray-800 text-lg">Fast</div>
+        <div class="mr-6 border-b-2 border-yellow-custom pb-1 font-bold text-gray-800 text-lg">Fast (v2.1)</div>
         <div class="pb-1 font-medium text-gray-400 text-lg">Perpetual</div>
     </div>
 
@@ -522,25 +522,11 @@
     }
 
     // --- Initialization ---
-    startTickerWs();
-    switchPair('BTC/USDT');
-
-    // DEBUG: Auto-open buttons to prove functionality (User Request)
-    setTimeout(() => {
-        console.log("Auto-opening Long Modal");
-        openOrder('long');
-        // Add a temporary visual indicator of version
-        const ver = document.createElement('div');
-        ver.className = 'fixed top-0 left-0 w-full bg-yellow-500 text-black text-center font-bold z-[60] py-1';
-        ver.textContent = 'SYSTEM UPDATED: Buttons & Live Chart Active';
-        document.body.appendChild(ver);
-        setTimeout(() => ver.remove(), 5000);
-    }, 1500);
-
-    setTimeout(() => {
-        console.log("Auto-switching to Short Modal");
-        openOrder('short');
-    }, 3500);
+    document.addEventListener('DOMContentLoaded', () => {
+        startTickerWs();
+        switchPair('BTC/USDT');
+        console.log("Futures Page Loaded v2.1");
+    });
 
     // --- Market Chat Logic ---
     const chatContainer = document.getElementById('marketChat');

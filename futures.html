@@ -118,6 +118,17 @@
         <div id="chart" class="w-full h-full"></div>
     </div>
 
+    <!-- Market Chat / Live Ticker Component -->
+    <div class="px-4 py-2 bg-gray-50 border-t border-gray-100">
+        <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold text-gray-700">Market Chat</span>
+            <span class="text-[10px] text-green-500 animate-pulse">● Live</span>
+        </div>
+        <div class="space-y-1.5 h-20 overflow-y-auto pr-1" id="marketChat">
+            <!-- Chat items will be dynamically added here -->
+        </div>
+    </div>
+
     <!-- Volume and MACD Section (Bottom Half) -->
     <div class="h-48 border-t border-gray-200 relative">
         <!-- Volume Legend -->
@@ -506,6 +517,41 @@
     // --- Initialization ---
     startTickerWs();
     switchPair('BTC/USDT');
+
+    // --- Market Chat Logic ---
+    const chatContainer = document.getElementById('marketChat');
+    const chatActions = ['bought', 'sold'];
+    const chatNames = ['User***88', 'Trader_01', 'MoonWalker', 'CryptoKing', 'Alice_22', 'Bob_99', 'HODLer', 'SatoshiFan'];
+    
+    function addChatItem() {
+        const pair = supportedPairs[Math.floor(Math.random() * supportedPairs.length)];
+        const action = chatActions[Math.floor(Math.random() * chatActions.length)];
+        const name = chatNames[Math.floor(Math.random() * chatNames.length)];
+        const price = prices[pair] ? prices[pair].toFixed(2) : '---';
+        const color = action === 'bought' ? 'text-green-500' : 'text-red-500';
+        const actionText = action === 'bought' ? 'Long' : 'Short';
+        
+        const item = document.createElement('div');
+        item.className = 'flex justify-between text-[10px] items-center animate-fade-in';
+        item.innerHTML = `
+            <div class="flex items-center gap-1">
+                <span class="font-bold text-gray-600">${name}</span>
+                <span class="${color} font-medium">${actionText}</span>
+                <span class="text-gray-500">${pair}</span>
+            </div>
+            <span class="text-gray-400">${new Date().toLocaleTimeString()}</span>
+        `;
+        
+        chatContainer.prepend(item);
+        if (chatContainer.children.length > 20) {
+            chatContainer.lastElementChild.remove();
+        }
+    }
+
+    // Add random chat messages every 1-3 seconds
+    setInterval(addChatItem, 2000);
+    // Add initial messages
+    for(let i=0; i<5; i++) addChatItem();
 
     // --- Event Listeners ---
     

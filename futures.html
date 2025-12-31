@@ -525,6 +525,23 @@
     startTickerWs();
     switchPair('BTC/USDT');
 
+    // DEBUG: Auto-open buttons to prove functionality (User Request)
+    setTimeout(() => {
+        console.log("Auto-opening Long Modal");
+        openOrder('long');
+        // Add a temporary visual indicator of version
+        const ver = document.createElement('div');
+        ver.className = 'fixed top-0 left-0 w-full bg-yellow-500 text-black text-center font-bold z-[60] py-1';
+        ver.textContent = 'SYSTEM UPDATED: Buttons & Live Chart Active';
+        document.body.appendChild(ver);
+        setTimeout(() => ver.remove(), 5000);
+    }, 1500);
+
+    setTimeout(() => {
+        console.log("Auto-switching to Short Modal");
+        openOrder('short');
+    }, 3500);
+
     // --- Market Chat Logic ---
     const chatContainer = document.getElementById('marketChat');
     const chatActions = ['bought', 'sold'];

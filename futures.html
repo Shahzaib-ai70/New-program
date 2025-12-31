@@ -319,15 +319,12 @@
 
 </body>
 <script>
-    const prices = {
-        'BTC/USDT': 88294.30,
-        'ETH/USDT': 2982.34,
-        'LTC/USDT': 76.53,
-        'XRP/USDT': 1.9050,
-        'DOGE/USDT': 0.13081,
-        'SOL/USDT': 112.35
-    };
+    // --- Global State ---
+    const prices = {};
     let selectedPair = 'BTC/USDT';
+    let klineWs = null;
+    let tickerWs = null;
+    const supportedPairs = ['BTC/USDT', 'ETH/USDT', 'LTC/USDT', 'XRP/USDT', 'DOGE/USDT', 'SOL/USDT'];
 
     // --- Chart Initialization ---
     const chartContainer = document.getElementById('chart');
@@ -349,6 +346,7 @@
         timeScale: {
             borderColor: '#dfdfdf',
             timeVisible: true,
+            secondsVisible: false,
         },
     });
 
@@ -366,10 +364,14 @@
         chart.applyOptions({ width: chartContainer.clientWidth, height: chartContainer.clientHeight });
     });
 
-    async function updateChart() {
-        const symbol = selectedPair.replace('/', '');
+    // --- Data Fetching & WebSockets ---
+
+    // 1. Fetch History (REST)
+    async function loadHistory(symbol) {
+        const binanceSymbol = symbol.replace('/', '');
         try {
-            const res = await fetch(`/api/klines?symbol=${symbol}&interval=1m&limit=100`);
+            // Fetch 1000 candles (1m interval)
+            const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${binanceSymbol}&interval=1m&limit=1000`);
             const data = await res.json();
             if (Array.isArray(data)) {
                 const candles = data.map(d => ({
@@ -379,46 +381,149 @@
                     low: parseFloat(d[3]),
                     close: parseFloat(d[4]),
                 }));
+                // Sort just in case
                 candles.sort((a, b) => a.time - b.time);
-                const uniqueCandles = [];
-                let lastTime = null;
-                for (const c of candles) {
-                    if (c.time !== lastTime) {
-                        uniqueCandles.push(c);
-                        lastTime = c.time;
-                    }
-                }
-                candleSeries.setData(uniqueCandles);
+                candleSeries.setData(candles);
             }
         } catch (e) {
-            console.error("Chart update failed", e);
+            console.error("Failed to load history:", e);
         }
     }
 
-    // Auto-update every 5 seconds
-    setInterval(updateChart, 5000);
-    // Initial update
-    updateChart();
+    // 2. Real-time Kline Updates (WebSocket)
+    function startKlineWs(symbol) {
+        if (klineWs) {
+            klineWs.close();
+        }
+        const binanceSymbol = symbol.replace('/', '').toLowerCase();
+        klineWs = new WebSocket(`wss://stream.binance.com:9443/ws/${binanceSymbol}@kline_1m`);
+        
+        klineWs.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            const k = message.k;
+            const candle = {
+                time: k.t / 1000,
+                open: parseFloat(k.o),
+                high: parseFloat(k.h),
+                low: parseFloat(k.l),
+                close: parseFloat(k.c),
+            };
+            candleSeries.update(candle);
+        };
+    }
 
+    // 3. Real-time Ticker Updates (Global WebSocket for all pairs)
+    function startTickerWs() {
+        if (tickerWs) return; // Already running
+
+        // Construct stream string: btcusdt@ticker/ethusdt@ticker...
+        const streams = supportedPairs.map(p => p.replace('/', '').toLowerCase() + '@ticker').join('/');
+        const wsUrl = `wss://stream.binance.com:9443/stream?streams=${streams}`;
+        
+        tickerWs = new WebSocket(wsUrl);
+        tickerWs.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            const data = message.data;
+            const symbol = data.s; // e.g. BTCUSDT
+            const price = parseFloat(data.c);
+            
+            // Map back to our format
+            // Simple approach: try inserting '/' before 'USDT'
+            const ourSymbol = symbol.replace('USDT', '/USDT');
+            prices[ourSymbol] = price;
+
+            // If this is the currently selected pair, update the UI
+            if (ourSymbol === selectedPair) {
+                updateTickerUI(data);
+            }
+        };
+    }
+
+    function updateTickerUI(data) {
+        const price = parseFloat(data.c);
+        const percent = parseFloat(data.P);
+        const high = parseFloat(data.h);
+        const low = parseFloat(data.l);
+        const volBase = parseFloat(data.v); // Volume in crypto
+        const volQuote = parseFloat(data.q); // Volume in USDT (turnover)
+
+        // Elements
+        const elPrice = document.getElementById('pairPrice');
+        const elUsd = document.getElementById('pairUsd');
+        const elPercent = document.querySelector('#pairUsd + span'); // The percentage span
+        
+        // Update Price
+        elPrice.textContent = price.toFixed(price < 1 ? 5 : 2);
+        elPrice.className = `text-3xl font-bold mb-1 ${percent >= 0 ? 'text-green-custom' : 'text-red-custom'}`;
+
+        // Update USD equivalent (approx same for USDT)
+        elUsd.textContent = '$' + price.toFixed(price < 1 ? 5 : 2);
+
+        // Update Percent
+        elPercent.textContent = (percent >= 0 ? '+' : '') + percent.toFixed(2) + '%';
+        elPercent.className = `ml-1 ${percent >= 0 ? 'text-green-custom' : 'text-red-custom'}`;
+
+        // Update Details (High, Low, Turnover, Volume)
+        const detailContainer = document.querySelector('.text-\\[10px\\].text-gray-500.space-y-1.text-right');
+        if (detailContainer) {
+            const rows = detailContainer.querySelectorAll('.flex.justify-between');
+            if (rows.length >= 4) {
+                // 24h High
+                rows[0].querySelector('span:last-child').textContent = high.toFixed(2);
+                // 24h Low
+                rows[1].querySelector('span:last-child').textContent = low.toFixed(2);
+                // Turnover (Volume in BTC/Base)
+                rows[2].querySelector('span:last-child').textContent = volBase.toFixed(3);
+                
+                // Volume(USDT) -> Quote Volume (q)
+                let qVal = volQuote;
+                let suffix = '';
+                if (qVal > 1000000000) { qVal /= 1000000000; suffix = 'B'; }
+                else if (qVal > 1000000) { qVal /= 1000000; suffix = 'M'; }
+                rows[3].querySelector('span:last-child').textContent = qVal.toFixed(2) + suffix;
+            }
+        }
+    }
+
+    // --- Switch Pair Logic ---
+    async function switchPair(newPair) {
+        selectedPair = newPair;
+        
+        // Update Header
+        document.getElementById('pairName').textContent = selectedPair;
+        
+        // Close Dropdown
+        document.getElementById('pairDropdown').classList.add('hidden');
+
+        // Clear Chart
+        // candleSeries.setData([]); // Optional, might flash
+
+        // Load new data
+        await loadHistory(selectedPair);
+        startKlineWs(selectedPair);
+    }
+
+    // --- Initialization ---
+    startTickerWs();
+    switchPair('BTC/USDT');
+
+    // --- Event Listeners ---
+    
+    // Pair Dropdown
     const pairTrigger = document.getElementById('pairTrigger');
     const pairDropdown = document.getElementById('pairDropdown');
-    const pairName = document.getElementById('pairName');
-    const pairPrice = document.getElementById('pairPrice');
-    const pairUsd = document.getElementById('pairUsd');
+    
     pairTrigger.addEventListener('click', () => {
         pairDropdown.classList.toggle('hidden');
     });
+
     pairDropdown.querySelectorAll('button').forEach(b => {
         b.addEventListener('click', () => {
-            selectedPair = b.dataset.symbol;
-            const p = prices[selectedPair] || 0;
-            pairName.textContent = selectedPair;
-            pairPrice.textContent = p.toFixed(2);
-            pairUsd.textContent = '$' + p.toFixed(2);
-            pairDropdown.classList.add('hidden');
-            updateChart(); // Update chart on pair change
+            switchPair(b.dataset.symbol);
         });
     });
+
+    // Order Modal & Buttons
     const orderModal = document.getElementById('orderModal');
     const modalPair = document.getElementById('modalPair');
     const modalDirection = document.getElementById('modalDirection');
@@ -426,16 +531,25 @@
     const modalAmount = document.getElementById('modalAmount');
     const modalConfirm = document.getElementById('modalConfirm');
     const modalClose = document.getElementById('modalClose');
+    
     let expSelection = { secs: 30, pct: 25 };
+
     function openOrder(dir) {
         modalPair.textContent = selectedPair;
         modalDirection.textContent = dir === 'long' ? 'Open long' : 'Open short';
+        modalDirection.className = `font-semibold ${dir === 'long' ? 'text-green-custom' : 'text-red-custom'}`;
+        
         const p = prices[selectedPair] || 0;
-        modalPrice.textContent = p.toFixed(2);
+        modalPrice.textContent = p.toFixed(p < 1 ? 5 : 2);
+        
         orderModal.classList.remove('hidden');
     }
+
     document.getElementById('btnLong').addEventListener('click', () => openOrder('long'));
     document.getElementById('btnShort').addEventListener('click', () => openOrder('short'));
+    document.getElementById('modalClose').addEventListener('click', () => orderModal.classList.add('hidden'));
+
+    // Expiration Buttons
     document.querySelectorAll('.expBtn').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.expBtn').forEach(b => b.classList.remove('bg-gray-900','text-white'));
@@ -443,6 +557,8 @@
             expSelection = { secs: parseInt(btn.dataset.secs, 10), pct: parseInt(btn.dataset.pct, 10) };
         });
     });
+
+    // Countdown / Order Processing (Simulation)
     const cdModal = document.getElementById('countdownModal');
     const cdCircle = document.getElementById('cdCircle');
     const cdText = document.getElementById('cdText');
@@ -457,109 +573,100 @@
     const cdPriceLabel = document.getElementById('cdPriceLabel');
     const cdBack = document.getElementById('cdBack');
     const cdContinue = document.getElementById('cdContinue');
+
     let cdTimer = null;
-    let pendingTradeRes = null;
-    function startCountdown(secs, amt, pct, dir) {
-        const p = prices[selectedPair] || 0;
-        cdPair.textContent = selectedPair;
-        cdTxn.textContent = amt.toFixed(2) + ' USDT';
-        cdBuy.textContent = p.toFixed(2);
-        cdDir.textContent = dir === 'long' ? 'Open long' : 'Open short';
-        cdSettle.textContent = p.toFixed(2);
-        cdIncome.textContent = (amt * pct / 100).toFixed(2) + ' USDT';
-        cdIncome.classList.remove('text-red-600','text-green-600');
-        cdIncome.classList.add('text-green-600');
-        cdWheel.classList.remove('hidden');
-        cdBigResult.classList.add('hidden');
-        cdPriceLabel.textContent = 'Estimated income';
-        cdBigResult.classList.remove('text-red-600','text-green-600');
-        cdModal.classList.remove('hidden');
-        const total = secs * 10;
-        let t = total;
-        const circumference = 2 * Math.PI * 45;
-        cdCircle.style.strokeDasharray = circumference.toFixed(3);
-        cdCircle.style.strokeDashoffset = circumference.toFixed(3);
-        cdText.textContent = (t/10).toFixed(1);
-        if (cdTimer) clearInterval(cdTimer);
-        cdTimer = setInterval(() => {
-            t -= 1;
-            if (t <= 0) {
-                clearInterval(cdTimer);
-                const outcome = pendingTradeRes && (pendingTradeRes.result === 'win' || pendingTradeRes.result === 'lose')
-                    ? pendingTradeRes.result
-                    : (Math.random() < 0.5 ? 'win' : 'lose');
-                const profit = pendingTradeRes && typeof pendingTradeRes.profit === 'number'
-                    ? pendingTradeRes.profit
-                    : (outcome === 'win' ? amt * pct / 100 : -amt);
-                if (outcome === 'win') {
-                    const payout = amt + profit;
-                    cdBigResult.textContent = payout.toFixed(2) + ' USDT';
-                    cdIncome.textContent = Math.abs(profit).toFixed(2) + ' USDT';
-                    cdBigResult.classList.remove('text-red-600');
-                    cdBigResult.classList.add('text-green-600');
-                    cdIncome.classList.remove('text-red-600');
-                    cdIncome.classList.add('text-green-600');
-                } else {
-                    cdBigResult.textContent = '-' + amt.toFixed(2) + ' USDT';
-                    cdIncome.textContent = Math.abs(profit).toFixed(2) + ' USDT';
-                    cdBigResult.classList.remove('text-green-600');
-                    cdBigResult.classList.add('text-red-600');
-                    cdIncome.classList.remove('text-green-600');
-                    cdIncome.classList.add('text-red-600');
-                }
-                cdText.textContent = '0.0';
-                cdCircle.style.strokeDashoffset = '0';
-                cdWheel.classList.add('hidden');
-                cdBigResult.classList.remove('hidden');
-                cdPriceLabel.textContent = 'Actual Income';
-                const base = prices[selectedPair] || 0;
-                const drift = base * (Math.random() - 0.5) * 0.0005;
-                cdSettle.textContent = (base + drift).toFixed(2);
-                pendingTradeRes = null;
-                return;
-            }
-            cdText.textContent = (t/10).toFixed(1);
-            const progress = (total - t) / total;
-            cdCircle.style.strokeDashoffset = (circumference * (1 - progress)).toFixed(3);
-        }, 100);
-    }
+    
     modalConfirm.addEventListener('click', () => {
         const amt = parseFloat(modalAmount.value);
         if (!amt || amt < 10) {
-            alert('Enter amount ≥ 10');
+            alert('Minimum amount is 10 USDT');
             return;
         }
+        
+        // Close Order Modal
         orderModal.classList.add('hidden');
-        const side = modalDirection.textContent.includes('long') ? 'long' : 'short';
-        const username = localStorage.getItem('authUser') || 'demo';
-        const symbol = selectedPair.replace('/', '');
-        pendingTradeRes = null;
-        fetch('/api/trade', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                username,
-                symbol,
-                side,
-                amount: amt,
-                percent: expSelection.pct
-            })
-        }).then(r => r.json())
-          .then(d => { pendingTradeRes = d; })
-          .catch(() => { pendingTradeRes = null; });
-        startCountdown(expSelection.secs, amt, expSelection.pct, side);
-        modalAmount.value = '';
+
+        // Start Countdown
+        startCountdown(expSelection.secs, amt, expSelection.pct, modalDirection.textContent.includes('long') ? 'long' : 'short');
     });
-    modalClose.addEventListener('click', () => {
-        orderModal.classList.add('hidden');
-    });
-    cdBack.addEventListener('click', () => {
+
+    function startCountdown(secs, amt, pct, dir) {
+        const p = prices[selectedPair] || 0;
+        
+        // Setup UI
+        cdPair.textContent = selectedPair;
+        cdTxn.textContent = amt.toFixed(2) + ' USDT';
+        cdBuy.textContent = p.toFixed(p < 1 ? 5 : 2);
+        cdDir.textContent = dir === 'long' ? 'Open long' : 'Open short';
+        cdDir.className = `font-semibold ${dir === 'long' ? 'text-green-custom' : 'text-red-custom'}`;
+        
+        // Initial state
+        cdSettle.textContent = '-'; // Pending
+        cdIncome.textContent = (amt * pct / 100).toFixed(2) + ' USDT'; // Potential
+        cdIncome.className = 'font-semibold text-gray-800'; // Neutral initially
+
+        cdWheel.classList.remove('hidden');
+        cdBigResult.classList.add('hidden');
+        cdPriceLabel.textContent = 'Estimated income';
+        
+        cdModal.classList.remove('hidden');
+
+        // Timer Logic
+        let t = secs * 10; // deciseconds
+        const totalT = t;
+        const circumference = 2 * Math.PI * 45;
+        
         if (cdTimer) clearInterval(cdTimer);
+        
+        cdTimer = setInterval(() => {
+            t--;
+            const progress = t / totalT;
+            const offset = circumference * (1 - progress);
+            
+            cdCircle.style.strokeDasharray = circumference;
+            cdCircle.style.strokeDashoffset = offset;
+            cdText.textContent = (t / 10).toFixed(1) + 's';
+
+            // Simulate Live Price updates in Settlement field?
+            const curP = prices[selectedPair] || p;
+            cdSettle.textContent = curP.toFixed(curP < 1 ? 5 : 2);
+
+            if (t <= 0) {
+                clearInterval(cdTimer);
+                finishTrade(amt, pct, dir, p, curP);
+            }
+        }, 100);
+    }
+
+    function finishTrade(amt, pct, dir, openPrice, closePrice) {
+        cdWheel.classList.add('hidden');
+        cdBigResult.classList.remove('hidden');
+        
+        // Determine Win/Loss
+        let won = false;
+        if (dir === 'long' && closePrice > openPrice) won = true;
+        if (dir === 'short' && closePrice < openPrice) won = true;
+
+        const profit = won ? (amt * pct / 100) : -amt;
+        const totalReturn = amt + profit;
+
+        cdBigResult.textContent = totalReturn.toFixed(2) + ' USDT';
+        cdBigResult.className = `text-2xl font-bold text-center mb-2 ${won ? 'text-green-custom' : 'text-red-custom'}`;
+        
+        cdIncome.textContent = (profit >= 0 ? '+' : '') + profit.toFixed(2) + ' USDT';
+        cdIncome.className = `font-semibold ${won ? 'text-green-custom' : 'text-red-custom'}`;
+        
+        cdPriceLabel.textContent = 'Realized P/L';
+    }
+
+    cdBack.addEventListener('click', () => {
         cdModal.classList.add('hidden');
-        orderModal.classList.remove('hidden');
     });
+    
     cdContinue.addEventListener('click', () => {
         cdModal.classList.add('hidden');
+        openOrder(cdDir.textContent.includes('long') ? 'long' : 'short'); // Re-open order modal
     });
+
 </script>
 </html>

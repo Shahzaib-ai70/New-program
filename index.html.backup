@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitsafe - Crypto Exchange</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8f8f8; }
+        .text-green-custom { color: #0ECB81; }
+        .bg-green-custom { background-color: #0ECB81; }
+        .text-yellow-custom { color: #F0B90B; }
+        .bg-yellow-custom { background-color: #ffb11a; }
+        .bottom-nav-item.active { color: #1f2937; }
+        .bottom-nav-item { color: #9ca3af; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="pb-20 max-w-md mx-auto bg-white min-h-screen shadow-lg overflow-x-hidden">
+    <div class="p-4 flex items-center justify-between sticky top-0 bg-white z-10">
+        <button id="gridMenuBtn" class="w-10 h-10 rounded-xl bg-white border border-gray-300 flex items-center justify-center mr-3 shadow-sm" aria-label="Menu">
+            <i class="fa-solid fa-grip-dots text-black text-xl"></i>
+        </button>
+        <div class="flex items-center bg-gray-100 rounded-full px-3 py-2 flex-1 mr-4">
+            <i class="fa-solid fa-magnifying-glass text-gray-400 mr-2"></i>
+            <input type="text" placeholder="BTC/USDT" class="bg-transparent border-none outline-none text-sm w-full placeholder-gray-400">
+        </div>
+        <div class="relative">
+            <i class="fa-solid fa-headset text-xl text-gray-700"></i>
+            <span class="absolute -top-1 -right-1 bg-red-500 rounded-full w-2 h-2"></span>
+        </div>
+    </div>
+    <div class="px-4 py-2">
+        <div class="flex items-center text-gray-500 text-sm mb-1"><span>Est.Total Value(USDT)</span></div>
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-4xl font-bold text-gray-800">0.97</h1>
+                <div class="flex items-center text-gray-500 text-sm mt-1"><span>≈ $0.96</span></div>
+                <div class="text-green-custom text-sm mt-1">0.00USDT(0%)</div>
+            </div>
+            <i class="fa-regular fa-eye text-gray-800 text-xl"></i>
+        </div>
+    </div>
+    <div class="px-4 py-4 flex gap-4">
+        <button onclick="document.getElementById('depositModal').classList.remove('hidden')" class="flex-1 bg-yellow-custom text-gray-900 py-3 rounded-xl font-semibold flex items-center justify-center shadow-sm"><i class="fa-solid fa-wallet mr-2"></i> Deposit</button>
+        <button onclick="document.getElementById('withdrawModal').classList.remove('hidden')" class="flex-1 bg-gray-100 text-gray-900 py-3 rounded-xl font-semibold flex items-center justify-center"><i class="fa-solid fa-arrow-up-from-bracket mr-2"></i> Withdraw</button>
+    </div>
+    <div id="depositModal" class="hidden fixed inset-0 z-50 flex items-end justify-center bg-black bg-opacity-50">
+        <div class="bg-white w-full max-w-md rounded-t-2xl p-6 relative animate-slide-up">
+            <div class="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-6"></div>
+            <h2 class="text-lg font-bold text-gray-800 mb-6">Select deposit method</h2>
+            <a href="deposit_currency.html" class="flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                <div class="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center text-white mr-4"><i class="fa-solid fa-arrow-right-to-bracket"></i></div>
+                <div><div class="font-bold text-gray-800">Ordinary Deposit</div><div class="text-xs text-gray-400">Transfer from wallet or exchange</div></div>
+            </a>
+            <button onclick="document.getElementById('depositModal').classList.add('hidden')" class="absolute top-0 right-0 p-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+    </div>
+    <div id="withdrawModal" class="hidden fixed inset-0 z-50 flex items-end justify-center bg-black bg-opacity-50">
+        <div class="bg-white w-full max-w-md rounded-t-2xl p-6 relative animate-slide-up">
+            <div class="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-6"></div>
+            <h2 class="text-lg font-bold text-gray-800 mb-6">Select withdrawal method</h2>
+            <a href="withdraw_currency.html" class="flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                <div class="w-10 h-10 bg-white border border-gray-200 rounded-lg flex items-center justify-center text-gray-900 mr-4"><i class="fa-solid fa-arrow-up-from-bracket"></i></div>
+                <div><div class="font-bold text-gray-800">Ordinary Withdraw</div><div class="text-xs text-gray-400">Transfer from wallet or exchange</div></div>
+            </a>
+            <button onclick="document.getElementById('withdrawModal').classList.add('hidden')" class="absolute top-0 right-0 p-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+    </div>
+    <style>
+        @keyframes slide-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .animate-slide-up { animation: slide-up 0.3s ease-out; }
+    </style>
+    <div class="border-t border-b border-gray-100 py-3 px-4 flex justify-between overflow-x-auto no-scrollbar">
+        <div class="flex flex-col min-w-[30%]"><span class="text-xs font-bold text-gray-800">BTC/USDT <span class="text-green-custom">+1.33%</span></span><span class="text-lg font-bold text-green-custom">88224.90</span></div>
+        <div class="flex flex-col min-w-[30%]"><span class="text-xs font-bold text-gray-800">ETH/USDT <span class="text-green-custom">+2.05%</span></span><span class="text-lg font-bold text-green-custom">2982.34</span></div>
+        <div class="flex flex-col min-w-[30%]"><span class="text-xs font-bold text-gray-800">XRP/USDT <span class="text-green-custom">+3.53%</span></span><span class="text-lg font-bold text-green-custom">1.9039</span></div>
+    </div>
+    <div class="grid grid-cols-4 gap-4 px-4 py-6">
+        <div class="flex flex-col items-center"><div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-2"><i class="fa-solid fa-robot text-gray-800 text-xl"></i></div><span class="text-xs text-gray-600">AI-Fi</span></div>
+        <div class="flex flex-col items-center"><div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-2"><i class="fa-solid fa-download text-gray-800 text-xl"></i></div><span class="text-xs text-gray-600 text-center">APP Download</span></div>
+        <div class="flex flex-col items-center"><div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-2"><i class="fa-solid fa-circle-question text-gray-800 text-xl"></i></div><span class="text-xs text-gray-600">Get Help</span></div>
+        <div class="flex flex-col items-center"><div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-2"><i class="fa-solid fa-user-plus text-gray-800 text-xl"></i></div><span class="text-xs text-gray-600">Referral</span></div>
+    </div>
+    <div class="px-4">
+        <div class="flex space-x-6 text-gray-400 font-medium text-lg border-b border-gray-100 pb-2"><div class="text-gray-900 border-b-2 border-yellow-custom pb-1">Favorites</div><div>Fast</div><div>Spot</div><div>Perpetual</div></div>
+        <div class="flex space-x-6 mt-4 text-sm text-gray-500 font-medium"><div class="text-gray-900 border-b-2 border-yellow-custom pb-1">Crypto</div><div>Stock</div><div>Forex</div><div>Gold</div></div>
+    </div>
+    <div class="flex justify-between px-4 mt-4 text-xs text-gray-400 mb-2"><div class="w-1/3 text-left">Name/Volume</div><div class="w-1/3 text-center">Latest Price</div><div class="w-1/3 text-right">24h chg</div></div>
+    <div class="px-4 space-y-6 pb-4">
+        <div class="flex items-center justify-between"><div class="flex items-center w-1/3"><div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white mr-2 text-xs font-bold">L</div><div><div class="flex items-baseline"><span class="font-bold text-gray-800 text-sm">LTC</span><span class="text-xs text-gray-400 ml-1">/USDT</span></div><div class="text-xs text-gray-400">703603.39</div></div></div><div class="w-1/3 text-center font-bold text-gray-800">76.53</div><div class="w-1/3 flex justify-end"><div class="bg-green-custom text-white px-3 py-1.5 rounded text-xs font-bold w-20 text-center">+0.86%</div></div></div>
+        <div class="flex items-center justify-between"><div class="flex items-center w-1/3"><div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white mr-2 text-xs font-bold">B</div><div><div class="flex items-baseline"><span class="font-bold text-gray-800 text-sm">BCH</span><span class="text-xs text-gray-400 ml-1">/USDT</span></div><div class="text-xs text-gray-400">92873.65</div></div></div><div class="w-1/3 text-center font-bold text-gray-800">602.4</div><div class="w-1/3 flex justify-end"><div class="bg-green-custom text-white px-3 py-1.5 rounded text-xs font-bold w-20 text-center">+2.08%</div></div></div>
+        <div class="flex items-center justify-between"><div class="flex items-center w-1/3"><div class="w-8 h-8 rounded-full bg-yellow-500 flex items-center justify-center text-white mr-2 text-xs font-bold">D</div><div><div class="flex items-baseline"><span class="font-bold text-gray-800 text-sm">DOGE</span><span class="text-xs text-gray-400 ml-1">/USDT</span></div><div class="text-xs text-gray-400">15388555</div></div></div><div class="w-1/3 text-center font-bold text-gray-800">0.13081</div><div class="w-1/3 flex justify-end"><div class="bg-green-custom text-white px-3 py-1.5 rounded text-xs font-bold w-20 text-center">+3.70%</div></div></div>
+        <div class="flex items-center justify-between"><div class="flex items-center w-1/3"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-white mr-2 text-xs font-bold">X</div><div><div class="flex items-baseline"><span class="font-bold text-gray-800 text-sm">XRP</span><span class="text-xs text-gray-400 ml-1">/USDT</span></div><div class="text-xs text-gray-400">3770401</div></div></div><div class="w-1/3 text-center font-bold text-gray-800">1.9050</div><div class="w-1/3 flex justify-end"><div class="bg-green-custom text-white px-3 py-1.5 rounded text-xs font-bold w-20 text-center">+3.52%</div></div></div>
+    </div>
+    <div id="profileMenu" class="hidden fixed inset-0 z-50 bg-white">
+        <div class="p-4 flex items-center justify-between border-b"><button id="menuBackBtn" class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center"><i class="fa-solid fa-arrow-left text-gray-700"></i></button><div class="relative"><i class="fa-solid fa-headset text-xl text-gray-700"></i></div></div>
+        <div class="p-4">
+            <div class="flex items-center gap-3 mb-4"><div class="w-12 h-12 rounded-full bg-yellow-200 flex items-center justify-center"><i class="fa-solid fa-user text-yellow-700"></i></div><div><div id="menuUserName" class="font-semibold text-gray-800">Guest</div><div class="text-xs text-gray-400">ID: —</div></div></div>
+            <div class="grid grid-cols-2 gap-3 mb-6"><button class="border rounded-xl p-4 text-left"><div class="font-semibold text-gray-800 mb-1">Certificação Primária</div><div class="text-xs text-gray-400">Análise</div></button><button class="border rounded-xl p-4 text-left"><div class="font-semibold text-gray-800 mb-1">Certificação Avançada</div><div class="text-xs text-gray-400">KYC</div></button></div>
+            <div class="space-y-1"><a href="#" class="flex items-center justify-between p-3"><span class="text-gray-800">Equipe</span><i class="fa-solid fa-chevron-right text-gray-400"></i></a><a href="#" class="flex items-center justify-between p-3"><span class="text-gray-800">Endereço</span><i class="fa-solid fa-chevron-right text-gray-400"></i></a><a href="#" class="flex items-center justify-between p-3"><span class="text-gray-800">Perfil de companhia</span><i class="fa-solid fa-chevron-right text-gray-400"></i></a><a href="#" class="flex items-center justify-between p-3"><span class="text-gray-800">Licença regulatória</span><i class="fa-solid fa-chevron-right text-gray-400"></i></a></div>
+        </div>
+        <div class="p-4"><button id="logoutBtn" class="w-full py-3 border rounded-xl text-gray-800">sair</button></div>
+    </div>
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2 px-6 flex justify-between items-center z-20 max-w-md mx-auto">
+        <div class="flex flex-col items-center bottom-nav-item active text-gray-900 cursor-pointer"><i class="fa-solid fa-house text-xl mb-1"></i><span class="text-[10px]">Home Page</span></div>
+        <a href="quotes.html" class="flex flex-col items-center bottom-nav-item cursor-pointer"><i class="fa-solid fa-chart-simple text-xl mb-1"></i><span class="text-[10px]">Quotes</span></a>
+        <a href="transaction.html" class="relative -top-5"><div class="w-12 h-12 bg-gray-900 rounded-full flex items-center justify-center shadow-lg border-4 border-white"><i class="fa-solid fa-arrow-right-arrow-left text-white text-lg transform rotate-45"></i></div><div class="text-center mt-1"><span class="text-[10px] text-gray-500">Transaction</span></div></a>
+        <a href="futures.html" class="flex flex-col items-center bottom-nav-item cursor-pointer"><i class="fa-solid fa-file-contract text-xl mb-1"></i><span class="text-[10px]">Futures</span></a>
+        <a href="#" onclick="handleAssetsClick(event)" class="flex flex-col items-center bottom-nav-item cursor-pointer"><i class="fa-solid fa-wallet text-xl mb-1"></i><span class="text-[10px]">Assets</span></a>
+    </div>
+    <script>
+        function isLoggedIn(){ return !!localStorage.getItem('authUser'); }
+        function handleAssetsClick(e){ e.preventDefault(); if(!isLoggedIn()){ window.location.href='register.html'; } else { window.location.href='assets.html'; } }
+         
+         // Fetch balance for home page
+         (function(){
+            const u = localStorage.getItem('authUser');
+            if(u) {
+                fetch('http://localhost:3001/api/me', { headers: { 'x-user': u } })
+                .then(r=>r.json())
+                .then(d=>{
+                    if(d && d.balance !== undefined) {
+                        const bal = d.balance.toFixed(2);
+                        const homeBal = document.getElementById('homeBalance');
+                        if(homeBal) homeBal.textContent = bal;
+                        const homeUsd = document.getElementById('homeBalanceUsd');
+                        if(homeUsd) homeUsd.textContent = '≈ $' + bal;
+                    }
+                })
+                .catch(console.error);
+            }
+         })();
+
+         const gridBtn=document.getElementById('gridMenuBtn'),menuEl=document.getElementById('profileMenu'),menuBackBtn=document.getElementById('menuBackBtn'),userNameEl=document.getElementById('menuUserName'),logoutBtn=document.getElementById('logoutBtn');
+         gridBtn?.addEventListener('click',function(){ 
+             const u=localStorage.getItem('authUser'); 
+             userNameEl.textContent=u?u:'Guest'; 
+             menuEl.classList.remove('hidden');
+             // Fetch real balance/user info if logged in
+             if(u) {
+                 fetch('http://localhost:3001/api/me', { headers: { 'x-user': u } })
+                 .then(r=>r.json())
+                 .then(d=>{
+                     if(d && d.username) {
+                          userNameEl.textContent = d.username;
+                          // Update ID or other fields if available in UI
+                     }
+                 })
+                 .catch(console.error);
+             }
+         });
+        menuBackBtn?.addEventListener('click',function(){ menuEl.classList.add('hidden'); });
+        logoutBtn?.addEventListener('click',function(){ 
+            fetch('http://localhost:3001/api/logout', { method: 'POST' })
+            .finally(() => {
+                localStorage.removeItem('authUser'); 
+                window.location.href='login.html'; 
+            });
+        });
+    </script>
+</body>
+</html>

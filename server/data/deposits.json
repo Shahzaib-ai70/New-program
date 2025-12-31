@@ -1,0 +1,22 @@
+[
+  {
+    "id": "mjolldty",
+    "currency": "USDT (TRC 20)",
+    "network": "TRC20",
+    "amount": 0,
+    "address": "TYo3onprGJ6KNm5HncNfLr2thcSwqaWBVL",
+    "voucher": null,
+    "status": "rejected",
+    "createdAt": "2025-12-27T17:52:12.358Z"
+  },
+  {
+    "id": "mjorrmu6",
+    "currency": "USDT (TRC 20)",
+    "network": "TRC20",
+    "amount": 666,
+    "address": "TYo3onprGJ6KNm5HncNfLr2thcSwqaWBVL",
+    "voucher": null,
+    "status": "rejected",
+    "createdAt": "2025-12-27T20:45:01.662Z"
+  }
+]

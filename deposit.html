@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitsafe - Deposit</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+        }
+        .text-yellow-custom {
+            color: #F0B90B;
+        }
+        .bg-yellow-custom {
+            background-color: #ffb11a;
+        }
+    </style>
+</head>
+<body class="bg-white min-h-screen max-w-md mx-auto shadow-lg overflow-x-hidden pb-10">
+
+    <!-- Header -->
+    <div class="px-4 py-4 flex items-center relative mb-4">
+        <a href="javascript:history.back()" class="absolute left-4 text-gray-800 text-xl">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+        <h1 class="w-full text-center text-lg font-bold text-gray-800">Deposit</h1>
+    </div>
+
+    <!-- QR Code Section -->
+    <div class="flex justify-center mb-8">
+        <div class="p-2 border border-gray-200 rounded-lg">
+             <!-- Using a placeholder QR code API or image -->
+             <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=TYo3onprGJ6KNm5HncNfLr2thcSwqaWBVL" alt="QR Code" class="w-40 h-40">
+        </div>
+    </div>
+
+    <!-- Form Fields -->
+    <div class="px-4 space-y-5">
+        
+        <!-- Deposit Currency -->
+        <div>
+            <label class="block text-xs text-gray-500 mb-2">Deposit Currency</label>
+            <div class="flex items-center border border-gray-200 rounded px-3 py-3">
+                <div id="currencyIconBg" class="w-5 h-5 rounded-full bg-red-700 flex items-center justify-center text-white mr-2 text-[10px] font-bold">
+                    <i id="currencyIcon" class="fa-brands fa-tumblr"></i>
+                </div>
+                <span id="currencyName" class="text-sm font-bold text-gray-800">USDT</span>
+            </div>
+        </div>
+
+        <!-- Wallet Amount -->
+        <div>
+            <label class="block text-xs text-gray-500 mb-2">Wallet Amount</label>
+            <div class="bg-gray-100 rounded px-3 py-3">
+                <input id="amountInput" type="text" placeholder="Deposit Amount" class="bg-transparent border-none outline-none text-sm w-full text-gray-700 placeholder-gray-500">
+            </div>
+        </div>
+
+        <!-- Address -->
+        <div>
+            <label class="block text-xs text-gray-500 mb-2">Address</label>
+            <div class="bg-gray-100 rounded px-3 py-3 flex justify-between items-center">
+                <span class="text-xs text-gray-800 break-all pr-2">TYo3onprGJ6KNm5HncNfLr2thcSwqaWBVL</span>
+                <i class="fa-regular fa-copy text-gray-800 text-lg cursor-pointer" onclick="navigator.clipboard.writeText('TYo3onprGJ6KNm5HncNfLr2thcSwqaWBVL')"></i>
+            </div>
+        </div>
+
+        <!-- Deposit Voucher -->
+        <div>
+            <label class="block text-xs text-gray-500 mb-2">Deposit Voucher</label>
+            <div class="relative w-24 h-24 border border-gray-200 rounded-xl flex items-center justify-center cursor-pointer hover:bg-gray-50 overflow-hidden" onclick="document.getElementById('fileInput').click()">
+                <img id="previewImage" class="hidden w-full h-full object-cover">
+                <div id="uploadPlaceholder" class="flex flex-col items-center justify-center">
+                    <i class="fa-solid fa-image text-gray-800 text-2xl"></i>
+                    <div class="absolute w-5 h-5 bg-white rounded-full border border-gray-200 flex items-center justify-center translate-x-4 translate-y-4">
+                         <i class="fa-solid fa-arrow-up text-xs text-gray-800"></i>
+                    </div>
+                </div>
+            </div>
+            <input type="file" id="fileInput" class="hidden" accept="image/*" onchange="previewFile()">
+        </div>
+
+    </div>
+
+    <!-- Confirm Button -->
+    <div class="px-4 mt-10">
+        <button onclick="submitDeposit()" class="w-full bg-yellow-custom text-gray-900 font-bold py-3.5 rounded-xl shadow-md active:opacity-90">
+            Confirm
+        </button>
+    </div>
+
+    <script>
+        // Parse URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const currency = urlParams.get('currency') || 'USDT (TRC-20)';
+        const iconClass = urlParams.get('icon') || 'fa-brands fa-tumblr';
+        const colorClass = urlParams.get('color') || 'bg-red-700';
+
+        // Update UI
+        document.getElementById('currencyName').textContent = currency.replace('-', ' ');
+        document.getElementById('currencyIcon').className = iconClass.replace('+', ' '); // decode + to space
+        
+        // Remove existing bg color classes and add the new one
+        const iconBg = document.getElementById('currencyIconBg');
+        iconBg.className = iconBg.className.replace(/bg-\w+-\d+/, ''); // simple regex to remove tailwind bg color
+        iconBg.classList.add(colorClass);
+
+
+        // File Upload Preview
+         function previewFile() {
+             const preview = document.getElementById('previewImage');
+             const placeholder = document.getElementById('uploadPlaceholder');
+             const file = document.getElementById('fileInput').files[0];
+             const reader = new FileReader();
+
+            reader.addEventListener("load", function () {
+                preview.src = reader.result;
+                preview.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+            }, false);
+
+             if (file) {
+                 reader.readAsDataURL(file);
+             }
+         }
+ 
+         async function submitDeposit() {
+             const user = localStorage.getItem('authUser');
+             if (!user) {
+                 alert('Please login first');
+                 window.location.href = 'login.html';
+                 return;
+             }
+
+             const currency = document.getElementById('currencyName').textContent.trim();
+             const network = 'TRC20';
+             const amount = document.getElementById('amountInput').value.trim();
+             const address = 'TYo3onprGJ6KNm5HncNfLr2thcSwqaWBVL';
+             const voucher = document.getElementById('fileInput').files[0] || null;
+             
+             if (!amount) {
+                 alert('Please enter amount');
+                 return;
+             }
+             if (!voucher) {
+                 alert('Please upload deposit proof');
+                 return;
+             }
+
+             const fd = new FormData();
+             fd.append('currency', currency);
+             fd.append('network', network);
+             fd.append('amount', amount);
+             fd.append('address', address);
+             if (voucher) fd.append('voucher', voucher);
+             
+             try {
+                 const res = await fetch('/api/deposit', { 
+                     method: 'POST', 
+                     body: fd,
+                     headers: {
+                         'x-user': user
+                     }
+                 });
+                 const json = await res.json();
+                 if (res.ok) {
+                    alert('Deposit submitted successfully! ID: ' + json.id);
+                    window.location.href = 'assets.html';
+                 } else {
+                    alert('Deposit failed: ' + (json.error || 'Unknown error'));
+                 }
+             } catch (e) {
+                 alert('Deposit failed: ' + e.message);
+             }
+         }
+     </script>
+ 
+ </body>
+ </html>

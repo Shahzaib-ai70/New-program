@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitsafe - Crypto Exchange</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f8f8;
+        }
+        .text-green-custom {
+            color: #0ECB81;
+        }
+        .bg-green-custom {
+            background-color: #0ECB81;
+        }
+        .text-yellow-custom {
+            color: #F0B90B;
+        }
+        .bg-yellow-custom {
+            background-color: #ffb11a;
+        }
+        .bottom-nav-item.active {
+            color: #1f2937;
+        }
+        .bottom-nav-item {
+            color: #9ca3af;
+        }
+        /* Hide scrollbar for horizontal scroll areas */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="pb-20 max-w-md mx-auto bg-white min-h-screen shadow-lg overflow-x-hidden">
+
+    <!-- Top Header -->
+    <div class="p-4 flex items-center justify-between sticky top-0 bg-white z-10">
+        <button id="gridMenuBtn" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3 shadow-sm hover:bg-gray-200 transition-colors" aria-label="Menu">
+            <i class="fa-solid fa-user text-gray-700 text-lg"></i>
+        </button>
+        <div class="flex items-center bg-gray-100 rounded-full px-3 py-2 flex-1 mr-4">
+            <i class="fa-solid fa-magnifying-glass text-gray-400 mr-2"></i>
+            <input type="text" placeholder="BTC/USDT" class="bg-transparent border-none outline-none text-sm w-full placeholder-gray-400">
+        </div>
+        <button id="csBtn" class="relative w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors">
+            <i class="fa-solid fa-headset text-xl text-gray-700"></i>
+            <span class="absolute top-2 right-2 bg-red-500 rounded-full w-2 h-2 border border-white"></span>
+        </button>
+    </div>
+
+    <!-- Balance Section -->
+    <div class="px-4 py-2">
+        <div class="flex items-center text-gray-500 text-sm mb-1">
+            <span>Est.Total Value(USDT)</span>
+        </div>
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 id="homeBalance" class="text-4xl font-bold text-gray-800">0.00</h1>
+                <div class="flex items-center text-gray-500 text-sm mt-1">
+                    <span id="homeBalanceUsd">≈ $0.00</span>
+                </div>
+                <div id="homeBalanceBreakdown" class="text-green-custom text-sm mt-1">0.00USDT(0%)</div>
+            </div>
+            <button id="toggleBalanceBtn" class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-100">
+                <i id="toggleBalanceIcon" class="fa-regular fa-eye text-gray-800 text-xl"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="px-4 py-4 flex gap-4">
+        <button onclick="document.getElementById('depositModal').classList.remove('hidden')" class="flex-1 bg-yellow-custom text-gray-900 py-3 rounded-xl font-semibold flex items-center justify-center shadow-sm">
+            <i class="fa-solid fa-wallet mr-2"></i> Deposit
+        </button>
+        <button onclick="document.getElementById('withdrawModal').classList.remove('hidden')" class="flex-1 bg-gray-100 text-gray-900 py-3 rounded-xl font-semibold flex items-center justify-center">
+            <i class="fa-solid fa-arrow-up-from-bracket mr-2"></i> Withdraw
+        </button>
+    </div>
+
+    <!-- Customer Service Modal -->
+    <div id="csModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div class="bg-white w-full max-w-sm rounded-2xl p-6 relative animate-scale-up mx-4">
+            <button id="closeCsBtn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-headset text-3xl text-blue-500"></i>
+                </div>
+                <h2 class="text-xl font-bold text-gray-800">Customer Support</h2>
+                <p class="text-gray-500 text-sm mt-1">We are here to help you 24/7</p>
+            </div>
+            
+            <div class="space-y-3">
+                <a href="https://wa.me/" target="_blank" class="flex items-center p-4 bg-green-50 border border-green-100 rounded-xl hover:bg-green-100 transition-colors group">
+                    <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white mr-4 shadow-sm group-hover:scale-110 transition-transform">
+                        <i class="fa-brands fa-whatsapp text-xl"></i>
+                    </div>
+                    <div>
+                        <div class="font-bold text-gray-800">WhatsApp</div>
+                        <div class="text-xs text-green-600">Chat now</div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-gray-300 ml-auto"></i>
+                </a>
+                
+                <a href="https://t.me/" target="_blank" class="flex items-center p-4 bg-blue-50 border border-blue-100 rounded-xl hover:bg-blue-100 transition-colors group">
+                    <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white mr-4 shadow-sm group-hover:scale-110 transition-transform">
+                        <i class="fa-brands fa-telegram text-xl"></i>
+                    </div>
+                    <div>
+                        <div class="font-bold text-gray-800">Telegram</div>
+                        <div class="text-xs text-blue-600">Join channel</div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-gray-300 ml-auto"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deposit Modal -->
+    <div id="depositModal" class="hidden fixed inset-0 z-50 flex items-end justify-center bg-black bg-opacity-50">
+        <div class="bg-white w-full max-w-md rounded-t-2xl p-6 relative animate-slide-up">
+            <div class="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-6"></div>
+            
+            <h2 class="text-lg font-bold text-gray-800 mb-6">Select deposit method</h2>
+            
+            <a href="deposit_currency.html" class="flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                <div class="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center text-white mr-4">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                </div>
+                <div>
+                    <div class="font-bold text-gray-800">Ordinary Deposit</div>
+                    <div class="text-xs text-gray-400">Transfer from wallet or exchange</div>
+                </div>
+            </a>
+
+            <!-- Close Modal Area -->
+            <button onclick="document.getElementById('depositModal').classList.add('hidden')" class="absolute top-0 right-0 p-4 text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Withdraw Modal -->
+    <div id="withdrawModal" class="hidden fixed inset-0 z-50 flex items-end justify-center bg-black bg-opacity-50">
+        <div class="bg-white w-full max-w-md rounded-t-2xl p-6 relative animate-slide-up">
+            <div class="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-6"></div>
+            
+            <h2 class="text-lg font-bold text-gray-800 mb-6">Select withdrawal method</h2>
+            
+            <a href="withdraw_currency.html" class="flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                <div class="w-10 h-10 bg-white border border-gray-200 rounded-lg flex items-center justify-center text-gray-900 mr-4">
+                    <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                </div>
+                <div>
+                    <div class="font-bold text-gray-800">Ordinary Withdraw</div>
+                    <div class="text-xs text-gray-400">Transfer from wallet or exchange</div>
+                </div>
+            </a>
+
+            <!-- Close Modal Area -->
+            <button onclick="document.getElementById('withdrawModal').classList.add('hidden')" class="absolute top-0 right-0 p-4 text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+    </div>
+    <style>
+        @keyframes slide-up {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        .animate-slide-up {
+            animation: slide-up 0.3s ease-out;
+        }
+        @keyframes scale-up {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .animate-scale-up {
+            animation: scale-up 0.2s ease-out;
+        }
+    </style>
+
+    <!-- Primary Information Modal -->
+    <div id="primaryInfoModal" class="hidden fixed inset-0 z-50 flex items-end justify-center bg-black bg-opacity-50">
+        <div class="bg-white w-full max-w-md rounded-t-2xl p-6 relative animate-slide-up">
+            <div class="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-6"></div>
+            <h2 class="text-lg font-bold text-gray-800 mb-4">Primary Information</h2>
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs text-gray-500">First Name</label>
+                        <input id="piFirstName" type="text" class="mt-1 w-full border rounded-lg px-3 py-2 text-sm" placeholder="John">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500">Last Name</label>
+                        <input id="piLastName" type="text" class="mt-1 w-full border rounded-lg px-3 py-2 text-sm" placeholder="Doe">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500">Document Type</label>
+                    <select id="piDocType" class="mt-1 w-full border rounded-lg px-3 py-2 text-sm">
+                        <option value="">Select</option>
+                        <option value="id_card">ID</option>
+                        <option value="passport">Passport</option>
+                        <option value="driving_licence">Driving Licence</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500">Document Number</label>
+                    <input id="piDocNumber" type="text" class="mt-1 w-full border rounded-lg px-3 py-2 text-sm" placeholder="Enter number">
+                </div>
+                <div class="flex gap-3">
+                    <button id="piSubmitBtn" class="flex-1 bg-yellow-custom text-gray-900 py-2 rounded-xl font-semibold">Submit</button>
+                    <button onclick="document.getElementById('primaryInfoModal').classList.add('hidden')" class="flex-1 bg-gray-100 text-gray-900 py-2 rounded-xl font-semibold">Cancel</button>
+                </div>
+            </div>
+            <button onclick="document.getElementById('primaryInfoModal').classList.add('hidden')" class="absolute top-0 right-0 p-4 text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Advanced Certification Modal -->
+    <div id="advancedCertModal" class="hidden fixed inset-0 z-50 flex items-end justify-center bg-black bg-opacity-50">
+        <div class="bg-white w-full max-w-md rounded-t-2xl p-6 relative animate-slide-up">
+            <div class="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-6"></div>
+            <h2 class="text-lg font-bold text-gray-800 mb-4">Advanced Certification</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs text-gray-500">Document Type</label>
+                    <select id="acDocType" class="mt-1 w-full border rounded-lg px-3 py-2 text-sm">
+                        <option value="">Select</option>
+                        <option value="id_card">ID</option>
+                        <option value="passport">Passport</option>
+                        <option value="driving_licence">Driving Licence</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500">Document Number</label>
+                    <input id="acDocNumber" type="text" class="mt-1 w-full border rounded-lg px-3 py-2 text-sm" placeholder="Enter number">
+                </div>
+                <div class="grid grid-cols-1 gap-3">
+                    <div>
+                        <label class="text-xs text-gray-500">Upload Front</label>
+                        <input id="acFront" type="file" accept="image/*" class="mt-1 w-full border rounded-lg px-3 py-2 text-sm">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500">Upload Back</label>
+                        <input id="acBack" type="file" accept="image/*" class="mt-1 w-full border rounded-lg px-3 py-2 text-sm">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500">Selfie Live</label>
+                        <input id="acSelfie" type="file" accept="image/*" class="mt-1 w-full border rounded-lg px-3 py-2 text-sm">
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <button id="acSubmitBtn" class="flex-1 bg-yellow-custom text-gray-900 py-2 rounded-xl font-semibold">Submit</button>
+                    <button onclick="document.getElementById('advancedCertModal').classList.add('hidden')" class="flex-1 bg-gray-100 text-gray-900 py-2 rounded-xl font-semibold">Cancel</button>
+                </div>
+            </div>
+            <button onclick="document.getElementById('advancedCertModal').classList.add('hidden')" class="absolute top-0 right-0 p-4 text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Ticker Section -->
+    <div class="border-t border-b border-gray-100 py-3 px-4 flex justify-between overflow-x-auto no-scrollbar">
+        <div class="flex flex-col min-w-[30%]">
+            <span class="text-xs font-bold text-gray-800">BTC/USDT <span class="text-green-custom">+1.33%</span></span>
+            <span class="text-lg font-bold text-green-custom">88224.90</span>
+        </div>
+        <div class="flex flex-col min-w-[30%]">
+            <span class="text-xs font-bold text-gray-800">ETH/USDT <span class="text-green-custom">+2.05%</span></span>
+            <span class="text-lg font-bold text-green-custom">2982.34</span>
+        </div>
+        <div class="flex flex-col min-w-[30%]">
+            <span class="text-xs font-bold text-gray-800">XRP/USDT <span class="text-green-custom">+3.53%</span></span>
+            <span class="text-lg font-bold text-green-custom">1.9039</span>
+        </div>
+    </div>
+
+    <!-- Quick Actions Grid -->
+    <div class="grid grid-cols-4 gap-4 px-4 py-6">
+        <div class="flex flex-col items-center">
+            <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-2">
+                <i class="fa-solid fa-robot text-gray-800 text-xl"></i>
+            </div>
+            <span class="text-xs text-gray-600">AI-Fi</span>
+        </div>
+        <div class="flex flex-col items-center">
+            <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-2">
+                <i class="fa-solid fa-download text-gray-800 text-xl"></i>
+            </div>
+            <span class="text-xs text-gray-600 text-center">APP Download</span>
+        </div>
+        <div class="flex flex-col items-center">
+            <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-2">
+                <i class="fa-solid fa-circle-question text-gray-800 text-xl"></i>
+            </div>
+            <span class="text-xs text-gray-600">Get Help</span>
+        </div>
+        <div class="flex flex-col items-center">
+            <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-2">
+                <i class="fa-solid fa-user-plus text-gray-800 text-xl"></i>
+            </div>
+            <span class="text-xs text-gray-600">Referral</span>
+        </div>
+    </div>
+
+    <!-- Market Tabs -->
+    <div class="px-4">
+        <div class="flex space-x-6 text-gray-400 font-medium text-lg border-b border-gray-100 pb-2">
+            <div class="text-gray-900 border-b-2 border-yellow-custom pb-1">Favorites</div>
+            <div>Fast</div>
+            <div>Spot</div>
+            <div>Perpetual</div>
+        </div>
+        
+        <div class="flex space-x-6 mt-4 text-sm text-gray-500 font-medium">
+            <div class="text-gray-900 border-b-2 border-yellow-custom pb-1">Crypto</div>
+            <div>Stock</div>
+            <div>Forex</div>
+            <div>Gold</div>
+        </div>
+    </div>
+
+    <!-- List Header -->
+    <div class="flex justify-between px-4 mt-4 text-xs text-gray-400 mb-2">
+        <div class="w-1/3 text-left">Name/Volume</div>
+        <div class="w-1/3 text-center">Latest Price</div>
+        <div class="w-1/3 text-right">24h chg</div>
+    </div>
+
+    <!-- Crypto List -->
+    <div class="px-4 space-y-6 pb-4">
+        <!-- Item 1: LTC -->
+        <div class="flex items-center justify-between">
+            <div class="flex items-center w-1/3">
+                <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white mr-2 text-xs font-bold">L</div>
+                <div>
+                    <div class="flex items-baseline">
+                        <span class="font-bold text-gray-800 text-sm">LTC</span>
+                        <span class="text-xs text-gray-400 ml-1">/USDT</span>
+                    </div>
+                    <div class="text-xs text-gray-400">703603.39</div>
+                </div>
+            </div>
+            <div class="w-1/3 text-center font-bold text-gray-800">
+                76.53
+            </div>
+            <div class="w-1/3 flex justify-end">
+                <div class="bg-green-custom text-white px-3 py-1.5 rounded text-xs font-bold w-20 text-center">
+                    +0.86%
+                </div>
+            </div>
+        </div>
+
+        <!-- Item 2: BCH -->
+        <div class="flex items-center justify-between">
+            <div class="flex items-center w-1/3">
+                <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white mr-2 text-xs font-bold">B</div>
+                <div>
+                    <div class="flex items-baseline">
+                        <span class="font-bold text-gray-800 text-sm">BCH</span>
+                        <span class="text-xs text-gray-400 ml-1">/USDT</span>
+                    </div>
+                    <div class="text-xs text-gray-400">92873.65</div>
+                </div>
+            </div>
+            <div class="w-1/3 text-center font-bold text-gray-800">
+                602.4
+            </div>
+            <div class="w-1/3 flex justify-end">
+                <div class="bg-green-custom text-white px-3 py-1.5 rounded text-xs font-bold w-20 text-center">
+                    +2.08%
+                </div>
+            </div>
+        </div>
+
+        <!-- Item 3: DOGE -->
+        <div class="flex items-center justify-between">
+            <div class="flex items-center w-1/3">
+                <div class="w-8 h-8 rounded-full bg-yellow-500 flex items-center justify-center text-white mr-2 text-xs font-bold">D</div>
+                <div>
+                    <div class="flex items-baseline">
+                        <span class="font-bold text-gray-800 text-sm">DOGE</span>
+                        <span class="text-xs text-gray-400 ml-1">/USDT</span>
+                    </div>
+                    <div class="text-xs text-gray-400">15388555</div>
+                </div>
+            </div>
+            <div class="w-1/3 text-center font-bold text-gray-800">
+                0.13081
+            </div>
+            <div class="w-1/3 flex justify-end">
+                <div class="bg-green-custom text-white px-3 py-1.5 rounded text-xs font-bold w-20 text-center">
+                    +3.70%
+                </div>
+            </div>
+        </div>
+
+        <!-- Item 4: XRP -->
+        <div class="flex items-center justify-between">
+            <div class="flex items-center w-1/3">
+                <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-white mr-2 text-xs font-bold">X</div>
+                <div>
+                    <div class="flex items-baseline">
+                        <span class="font-bold text-gray-800 text-sm">XRP</span>
+                        <span class="text-xs text-gray-400 ml-1">/USDT</span>
+                    </div>
+                    <div class="text-xs text-gray-400">3770401</div>
+                </div>
+            </div>
+            <div class="w-1/3 text-center font-bold text-gray-800">
+                1.9050
+            </div>
+            <div class="w-1/3 flex justify-end">
+                <div class="bg-green-custom text-white px-3 py-1.5 rounded text-xs font-bold w-20 text-center">
+                    +3.52%
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Menu Overlay -->
+    <div id="profileMenu" class="hidden fixed inset-0 z-40 bg-white">
+        <div class="p-4 flex items-center justify-between border-b">
+            <button id="menuBackBtn" class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center">
+                <i class="fa-solid fa-arrow-left text-gray-700"></i>
+            </button>
+            <div class="relative">
+                <i class="fa-solid fa-headset text-xl text-gray-700"></i>
+            </div>
+        </div>
+        <div class="p-4">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 rounded-full bg-yellow-200 flex items-center justify-center">
+                    <i class="fa-solid fa-user text-yellow-700"></i>
+                </div>
+                <div>
+                    <div id="menuUserName" class="font-semibold text-gray-800">Guest</div>
+                    <div id="menuUserId" class="text-xs text-gray-400">ID: —</div>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3 mb-6">
+                <button id="btnPrimaryInfo" class="border rounded-xl p-4 text-left hover:bg-gray-50">
+                    <div class="font-semibold text-gray-800 mb-1">Primary Information</div>
+                    <div id="primaryStatus" class="text-xs text-gray-400">Review</div>
+                </button>
+                <button id="btnAdvancedCert" class="border rounded-xl p-4 text-left hover:bg-gray-50">
+                    <div class="font-semibold text-gray-800 mb-1">Advanced Certification</div>
+                    <div id="advancedStatus" class="text-xs text-gray-400">KYC</div>
+                </button>
+            </div>
+            <div class="space-y-1">
+                <a href="#" class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg">
+                    <span class="text-gray-800">Team</span>
+                    <i class="fa-solid fa-chevron-right text-gray-400"></i>
+                </a>
+                <a href="#" class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg">
+                    <span class="text-gray-800">Address</span>
+                    <i class="fa-solid fa-chevron-right text-gray-400"></i>
+                </a>
+                <a href="#" class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg">
+                    <span class="text-gray-800">Company Profile</span>
+                    <i class="fa-solid fa-chevron-right text-gray-400"></i>
+                </a>
+                <a href="#" class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg">
+                    <span class="text-gray-800">Regulatory License</span>
+                    <i class="fa-solid fa-chevron-right text-gray-400"></i>
+                </a>
+            </div>
+        </div>
+        <div class="p-4">
+            <button id="logoutBtn" class="w-full py-3 border rounded-xl text-gray-800 hover:bg-red-50 hover:text-red-600 transition-colors">Log Out</button>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2 px-6 flex justify-between items-center z-20 max-w-md mx-auto">
+        <div class="flex flex-col items-center bottom-nav-item active text-gray-900 cursor-pointer">
+            <i class="fa-solid fa-house text-xl mb-1"></i>
+            <span class="text-[10px]">Home Page</span>
+        </div>
+        <a href="quotes.html" class="flex flex-col items-center bottom-nav-item cursor-pointer">
+            <i class="fa-solid fa-chart-simple text-xl mb-1"></i>
+            <span class="text-[10px]">Quotes</span>
+        </a>
+        <a href="transaction.html" class="relative -top-5">
+            <div class="w-12 h-12 bg-gray-900 rounded-full flex items-center justify-center shadow-lg border-4 border-white">
+                <i class="fa-solid fa-arrow-right-arrow-left text-white text-lg transform rotate-45"></i>
+            </div>
+            <div class="text-center mt-1">
+                <span class="text-[10px] text-gray-500">Transaction</span>
+            </div>
+        </a>
+        <a href="futures.html" class="flex flex-col items-center bottom-nav-item cursor-pointer">
+            <i class="fa-solid fa-file-contract text-xl mb-1"></i>
+            <span class="text-[10px]">Futures</span>
+        </a>
+        <a href="#" onclick="handleAssetsClick(event)" class="flex flex-col items-center bottom-nav-item cursor-pointer">
+            <i class="fa-solid fa-wallet text-xl mb-1"></i>
+            <span class="text-[10px]">Assets</span>
+        </a>
+    </div>
+
+    <script>
+        function isLoggedIn() {
+            return !!localStorage.getItem('authUser');
+        }
+        function handleAssetsClick(e) {
+            e.preventDefault();
+            if (!isLoggedIn()) {
+                window.location.href = 'register.html';
+            } else {
+                window.location.href = 'assets.html';
+            }
+        }
+        
+        // Fetch balance for home page
+        (function(){
+            const u = localStorage.getItem('authUser');
+            if(u) {
+                fetch('/api/me', { headers: { 'x-user': u } })
+                .then(r=>r.json())
+                .then(d=>{
+                    if(d && d.balance !== undefined) {
+                        window.__lastBalance = d.balance;
+                        renderBalance();
+                    }
+                })
+                .catch(console.error);
+            } else {
+                window.__lastBalance = 0;
+                renderBalance();
+            }
+        })();
+
+        const gridBtn = document.getElementById('gridMenuBtn');
+        const menuEl = document.getElementById('profileMenu');
+        const menuBackBtn = document.getElementById('menuBackBtn');
+        const userNameEl = document.getElementById('menuUserName');
+        const userIdEl = document.getElementById('menuUserId');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const toggleBalanceBtn = document.getElementById('toggleBalanceBtn');
+        const toggleBalanceIcon = document.getElementById('toggleBalanceIcon');
+        let balanceHidden = localStorage.getItem('hideBalance') === '1';
+        function renderBalance() {
+            const bal = (window.__lastBalance || 0).toFixed(2);
+            const homeBal = document.getElementById('homeBalance');
+            const homeUsd = document.getElementById('homeBalanceUsd');
+            const homeBreak = document.getElementById('homeBalanceBreakdown');
+            if(balanceHidden) {
+                if(homeBal) homeBal.textContent = '****';
+                if(homeUsd) homeUsd.textContent = '≈ $****';
+                if(homeBreak) homeBreak.textContent = '****';
+                if(toggleBalanceIcon) toggleBalanceIcon.className = 'fa-regular fa-eye-slash text-gray-800 text-xl';
+            } else {
+                if(homeBal) homeBal.textContent = bal;
+                if(homeUsd) homeUsd.textContent = '≈ $' + bal;
+                if(homeBreak) homeBreak.textContent = bal + 'USDT(0%)';
+                if(toggleBalanceIcon) toggleBalanceIcon.className = 'fa-regular fa-eye text-gray-800 text-xl';
+            }
+        }
+        toggleBalanceBtn?.addEventListener('click', function(){
+            balanceHidden = !balanceHidden;
+            localStorage.setItem('hideBalance', balanceHidden ? '1' : '0');
+            renderBalance();
+        });
+        
+        // Customer Service Modal Logic
+        const csBtn = document.getElementById('csBtn');
+        const csModal = document.getElementById('csModal');
+        const closeCsBtn = document.getElementById('closeCsBtn');
+        
+        csBtn?.addEventListener('click', () => {
+            csModal.classList.remove('hidden');
+        });
+        
+        closeCsBtn?.addEventListener('click', () => {
+            csModal.classList.add('hidden');
+        });
+        
+        csModal?.addEventListener('click', (e) => {
+            if(e.target === csModal) {
+                csModal.classList.add('hidden');
+            }
+        });
+
+        gridBtn?.addEventListener('click', function () {
+            const u = localStorage.getItem('authUser');
+            userNameEl.textContent = u ? u : 'Guest';
+            menuEl.classList.remove('hidden');
+            if(u) {
+                fetch('/api/me', { headers: { 'x-user': u } })
+                .then(r=>r.json())
+                .then(d=>{
+                    if(d && d.username) {
+                         userNameEl.textContent = d.username;
+                         if(typeof d.id !== 'undefined') {
+                             userIdEl.textContent = 'ID: #' + d.id;
+                         }
+                    }
+                })
+                .catch(console.error);
+                fetch('/api/verification/status', { headers: { 'x-user': u } })
+                .then(r=>r.json())
+                .then(s=>{
+                    primaryState = s.primary || null;
+                    advancedState = s.advanced || null;
+                    renderVerificationUI();
+                })
+                .catch(()=>{});
+            }
+        });
+        menuBackBtn?.addEventListener('click', function () {
+            menuEl.classList.add('hidden');
+        });
+        logoutBtn?.addEventListener('click', function () {
+             fetch('/api/logout', { method: 'POST' })
+             .finally(() => {
+                 localStorage.removeItem('authUser'); 
+                 window.location.href='login.html'; 
+             });
+        });
+        const btnPrimaryInfo = document.getElementById('btnPrimaryInfo');
+        const btnAdvancedCert = document.getElementById('btnAdvancedCert');
+        const primaryInfoModal = document.getElementById('primaryInfoModal');
+        const advancedCertModal = document.getElementById('advancedCertModal');
+        const piSubmitBtn = document.getElementById('piSubmitBtn');
+        const acSubmitBtn = document.getElementById('acSubmitBtn');
+        let primaryState = null;
+        let advancedState = null;
+        function renderVerificationUI() {
+            const ps = document.getElementById('primaryStatus');
+            const as = document.getElementById('advancedStatus');
+            if(primaryState === 'approved') {
+                btnPrimaryInfo.className = 'border rounded-xl p-4 text-left bg-green-50 border-green-200';
+                ps.innerHTML = '<span class=\"text-green-600 font-medium\"><i class=\"fa-solid fa-check mr-1\"></i>approved</span>';
+            } else if(primaryState === 'pending') {
+                btnPrimaryInfo.className = 'border rounded-xl p-4 text-left hover:bg-yellow-50 border-yellow-200';
+                ps.innerHTML = '<span class=\"text-yellow-600 font-medium\"><i class=\"fa-solid fa-clock mr-1\"></i>pending</span>';
+            } else {
+                btnPrimaryInfo.className = 'border rounded-xl p-4 text-left hover:bg-gray-50';
+                ps.textContent = 'Review';
+            }
+            if(advancedState === 'approved') {
+                btnAdvancedCert.className = 'border rounded-xl p-4 text-left bg-green-50 border-green-200';
+                as.innerHTML = '<span class=\"text-green-600 font-medium\"><i class=\"fa-solid fa-check mr-1\"></i>approved</span>';
+            } else if(advancedState === 'pending') {
+                btnAdvancedCert.className = 'border rounded-xl p-4 text-left hover:bg-yellow-50 border-yellow-200';
+                as.innerHTML = '<span class=\"text-yellow-600 font-medium\"><i class=\"fa-solid fa-clock mr-1\"></i>pending</span>';
+            } else {
+                btnAdvancedCert.className = 'border rounded-xl p-4 text-left hover:bg-gray-50';
+                as.textContent = 'KYC';
+            }
+        }
+        function canOpenPrimary() {
+            return primaryState !== 'approved' || advancedState !== 'approved';
+        }
+        function canOpenAdvanced() {
+            if(primaryState !== 'approved') {
+                alert('First complete Primary Information');
+                return false;
+            }
+            return advancedState !== 'approved' || primaryState !== 'approved';
+        }
+        btnPrimaryInfo?.addEventListener('click', ()=>{
+            if(!canOpenPrimary()) return;
+            primaryInfoModal.classList.remove('hidden');
+        });
+        btnAdvancedCert?.addEventListener('click', ()=>{
+            if(!canOpenAdvanced()) return;
+            advancedCertModal.classList.remove('hidden');
+        });
+        piSubmitBtn?.addEventListener('click', async ()=>{
+            const u = localStorage.getItem('authUser');
+            if(!u) { alert('Please login first'); return; }
+            const first_name = document.getElementById('piFirstName').value.trim();
+            const last_name = document.getElementById('piLastName').value.trim();
+            const document_type = document.getElementById('piDocType').value.trim();
+            const document_number = document.getElementById('piDocNumber').value.trim();
+            if(!first_name || !last_name || !document_type || !document_number) { alert('Fill all fields'); return; }
+            try {
+              const r = await fetch('http://localhost:3001/api/verification/primary', {
+                 method: 'POST',
+                 headers: { 'Content-Type': 'application/json', 'x-user': u },
+                 body: JSON.stringify({ first_name, last_name, document_type, document_number })
+              });
+              const j = await r.json();
+              if(r.ok) {
+                primaryState = 'pending';
+                renderVerificationUI();
+                primaryInfoModal.classList.add('hidden');
+              } else {
+                alert(j.error || 'Submit failed');
+              }
+            } catch(e) { alert(e.message); }
+        });
+        acSubmitBtn?.addEventListener('click', async ()=>{
+            const u = localStorage.getItem('authUser');
+            if(!u) { alert('Please login first'); return; }
+            const document_type = document.getElementById('acDocType').value.trim();
+            const document_number = document.getElementById('acDocNumber').value.trim();
+            const front = document.getElementById('acFront').files[0];
+            const back = document.getElementById('acBack').files[0];
+            const selfie = document.getElementById('acSelfie').files[0];
+            if(!document_type || !document_number || !front || !back || !selfie) { alert('Fill all fields'); return; }
+            const fd = new FormData();
+            fd.append('document_type', document_type);
+            fd.append('document_number', document_number);
+            fd.append('front', front);
+            fd.append('back', back);
+            fd.append('selfie', selfie);
+            try {
+              const r = await fetch('http://localhost:3001/api/verification/advanced', {
+                 method: 'POST',
+                 headers: { 'x-user': u },
+                 body: fd
+              });
+              const j = await r.json();
+              if(r.ok) {
+                advancedState = 'pending';
+                renderVerificationUI();
+                advancedCertModal.classList.add('hidden');
+              } else {
+                alert(j.error || 'Submit failed');
+              }
+            } catch(e) { alert(e.message); }
+        });
+    </script>
+</body>
+</html>

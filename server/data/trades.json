@@ -1,0 +1,24 @@
+[
+  {
+    "id": "mjnwtk67",
+    "symbol": "BTCUSDT",
+    "side": "buy",
+    "quantity": 0,
+    "type": "Market",
+    "price": null,
+    "outcome": "lose",
+    "pnl": 0,
+    "createdAt": "2025-12-27T06:18:43.423Z"
+  },
+  {
+    "id": "mjors8ir",
+    "symbol": "BTCUSDT",
+    "side": "buy",
+    "quantity": 0,
+    "type": "Market",
+    "price": null,
+    "outcome": "lose",
+    "pnl": 0,
+    "createdAt": "2025-12-27T20:45:29.763Z"
+  }
+]

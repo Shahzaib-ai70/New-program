@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - Bitsafe</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="min-h-screen bg-white max-w-md mx-auto">
+  <div class="p-6">
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-xl font-bold text-gray-800">Create account</h1>
+      <a href="login.html" class="text-sm text-gray-500 hover:underline">Login</a>
+    </div>
+    <form id="registerForm" class="space-y-4">
+      <div>
+        <label class="text-sm text-gray-600">Username</label>
+        <input type="text" id="regUsername" class="w-full mt-1 px-3 py-2 border rounded-lg focus:outline-none" placeholder="Enter username" required>
+      </div>
+      <div>
+        <label class="text-sm text-gray-600">Password</label>
+        <input type="password" id="regPassword" class="w-full mt-1 px-3 py-2 border rounded-lg focus:outline-none" placeholder="Enter password" required>
+      </div>
+      <button type="submit" class="w-full py-3 bg-gray-900 text-white rounded-lg font-semibold">
+        Register
+      </button>
+    </form>
+    <p class="text-xs text-gray-400 mt-4">By continuing, you agree to the Terms.</p>
+  </div>
+  <script>
+    document.getElementById('registerForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const u = document.getElementById('regUsername').value.trim();
+      const p = document.getElementById('regPassword').value.trim();
+      if (!u || !p) return;
+
+      fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: u, password: p })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          window.location.replace('login.html');
+        } else {
+          alert('Registration failed: ' + (data.error || 'Unknown error'));
+        }
+      })
+      .catch(err => alert('Error: ' + err));
+    });
+  </script>
+</body>
+</html>

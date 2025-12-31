@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitsafe - Assets</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #ffffff; }
+        .text-green-custom { color: #0ECB81; }
+        .bg-green-custom { background-color: #0ECB81; }
+        .text-yellow-custom { color: #F0B90B; }
+        .bg-yellow-custom { background-color: #ffb11a; }
+        .bottom-nav-item.active { color: #1f2937; }
+        .bottom-nav-item { color: #9ca3af; }
+    </style>
+</head>
+<body class="pb-20 max-w-md mx-auto bg-white min-h-screen shadow-lg overflow-x-hidden">
+    <div class="p-4 flex items-center justify-between sticky top-0 bg-white z-10">
+        <button id="gridMenuBtn" class="w-10 h-10 rounded-xl bg-white border border-gray-300 flex items-center justify-center mr-3 shadow-sm" aria-label="Menu">
+            <i class="fa-solid fa-grip-dots text-black text-xl"></i>
+        </button>
+        <div class="flex-1"></div>
+        <div class="relative">
+            <i class="fa-solid fa-headset text-xl text-gray-700"></i>
+            <span class="absolute -top-1 -right-1 bg-red-500 rounded-full w-2 h-2"></span>
+        </div>
+    </div>
+    <script>(function(){ if(!localStorage.getItem('authUser')){ window.location.replace('register.html'); } })();</script>
+    <div class="px-4 pt-4 pb-2">
+        <div class="flex space-x-6 text-gray-400 font-medium text-lg">
+            <div class="text-gray-900 border-b-2 border-yellow-custom pb-1 font-bold">Overview</div>
+            <div class="pb-1">Fast</div>
+            <div class="pb-1">Futures</div>
+            <div class="pb-1">Spot</div>
+            <div class="pb-1">Funding</div>
+        </div>
+    </div>
+    <div class="px-4 py-4">
+        <div class="flex items-center text-gray-500 text-sm mb-1"><span>Est.Total Value(USDT)</span></div>
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-4xl font-bold text-gray-800">0.97</h1>
+                <div class="flex items-center text-gray-500 text-sm mt-1"><span>≈ $0.96</span></div>
+                <div class="text-green-custom text-sm mt-1">0.00USDT(0%)</div>
+            </div>
+            <i class="fa-regular fa-eye text-gray-800 text-xl"></i>
+        </div>
+    </div>
+    <div class="grid grid-cols-4 gap-4 px-4 py-4">
+        <a href="deposit_currency.html" class="flex flex-col items-center cursor-pointer"><div class="w-14 h-14 bg-yellow-custom rounded-2xl flex items-center justify-center mb-2 shadow-sm"><i class="fa-solid fa-wallet text-gray-900 text-xl"></i></div><span class="text-sm text-gray-800 font-medium">Deposit</span></a>
+        <div class="flex flex-col items-center cursor-pointer" onclick="document.getElementById('withdrawModal').classList.remove('hidden')"><div class="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mb-2"><i class="fa-solid fa-arrow-up-from-bracket text-gray-800 text-xl"></i></div><span class="text-sm text-gray-800 font-medium">Withdraw</span></div>
+        <div class="flex flex-col items-center"><div class="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mb-2"><i class="fa-solid fa-arrow-right-arrow-left text-gray-800 text-xl"></i></div><span class="text-sm text-gray-800 font-medium">Convert</span></div>
+        <div class="flex flex-col items-center"><div class="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mb-2"><i class="fa-solid fa-repeat text-gray-800 text-xl"></i></div><span class="text-sm text-gray-800 font-medium">Transfer</span></div>
+    </div>
+    <div id="withdrawModal" class="hidden fixed inset-0 z-50 flex items-end justify-center bg-black bg-opacity-50">
+        <div class="bg-white w-full max-w-md rounded-t-2xl p-6 relative animate-slide-up">
+            <div class="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-6"></div>
+            <h2 class="text-lg font-bold text-gray-800 mb-6">Select withdrawal method</h2>
+            <a href="withdraw_currency.html" class="flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                <div class="w-10 h-10 bg-white border border-gray-200 rounded-lg flex items-center justify-center text-gray-900 mr-4"><i class="fa-solid fa-arrow-up-from-bracket"></i></div>
+                <div><div class="font-bold text-gray-800">Ordinary Withdraw</div><div class="text-xs text-gray-400">Transfer from wallet or exchange</div></div>
+            </a>
+            <button onclick="document.getElementById('withdrawModal').classList.add('hidden')" class="absolute top-0 right-0 p-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+    </div>
+    <style>@keyframes slide-up{ from{ transform: translateY(100%);} to{ transform: translateY(0);} } .animate-slide-up{ animation: slide-up 0.3s ease-out; }</style>
+    <div class="px-4 mt-2">
+        <h2 class="text-lg font-medium text-gray-800 mb-4">Account</h2>
+        <div class="space-y-6">
+            <div class="flex justify-between items-center"><span class="text-gray-800 font-medium">Fast Assets</span><div class="text-right"><div class="text-gray-800 font-bold text-sm">0.97 <span class="text-xs">USDT</span></div><div class="text-gray-400 text-xs">$ 0.96</div></div></div>
+            <div class="flex justify-between items-center"><span class="text-gray-800 font-medium">Futures Assets</span><div class="text-right"><div class="text-gray-800 font-bold text-sm">0.00 <span class="text-xs">USDT</span></div><div class="text-gray-400 text-xs">$ 0.00</div></div></div>
+            <div class="flex justify-between items-center"><span class="text-gray-800 font-medium">Spot Assets</span><div class="text-right"><div class="text-gray-800 font-bold text-sm">0.00 <span class="text-xs">USDT</span></div><div class="text-gray-400 text-xs">$ 0.00</div></div></div>
+            <div class="flex justify-between items-center"><span class="text-gray-800 font-medium">Funding Assets</span><div class="text-right"><div class="text-gray-800 font-bold text-sm">0.00 <span class="text-xs">USDT</span></div><div class="text-gray-400 text-xs">$ 0.00</div></div></div>
+        </div>
+    </div>
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2 px-6 flex justify-between items-center z-20 max-w-md mx-auto">
+        <a href="index.html" class="flex flex-col items-center bottom-nav-item cursor-pointer"><i class="fa-solid fa-house text-xl mb-1"></i><span class="text-[10px]">Home Page</span></a>
+        <a href="quotes.html" class="flex flex-col items-center bottom-nav-item cursor-pointer"><i class="fa-solid fa-chart-simple text-xl mb-1"></i><span class="text-[10px]">Quotes</span></a>
+        <a href="transaction.html" class="relative -top-5"><div class="w-12 h-12 bg-gray-900 rounded-full flex items-center justify-center shadow-lg border-4 border-white"><i class="fa-solid fa-arrow-right-arrow-left text-white text-lg transform rotate-45"></i></div><div class="text-center mt-1"><span class="text-[10px] text-gray-500">Transaction</span></div></a>
+        <a href="futures.html" class="flex flex-col items-center bottom-nav-item cursor-pointer"><i class="fa-solid fa-file-contract text-xl mb-1"></i><span class="text-[10px]">Futures</span></a>
+        <div class="flex flex-col items-center bottom-nav-item active text-gray-900 cursor-pointer"><i class="fa-solid fa-wallet text-xl mb-1"></i><span class="text-[10px]">Assets</span></div>
+    </div>
+    <div id="profileMenu" class="hidden fixed inset-0 z-50 bg-white">
+        <div class="p-4 flex items-center justify-between border-b"><button id="menuBackBtn" class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center"><i class="fa-solid fa-arrow-left text-gray-700"></i></button><div class="relative"><i class="fa-solid fa-headset text-xl text-gray-700"></i></div></div>
+        <div class="p-4">
+            <div class="flex items-center gap-3 mb-4"><div class="w-12 h-12 rounded-full bg-yellow-200 flex items-center justify-center"><i class="fa-solid fa-user text-yellow-700"></i></div><div><div id="menuUserName" class="font-semibold text-gray-800">Guest</div><div class="text-xs text-gray-400">ID: —</div></div></div>
+            <div class="grid grid-cols-2 gap-3 mb-6"><button class="border rounded-xl p-4 text-left"><div class="font-semibold text-gray-800 mb-1">Certificação Primária</div><div class="text-xs text-gray-400">Análise</div></button><button class="border rounded-xl p-4 text-left"><div class="font-semibold text-gray-800 mb-1">Certificação Avançada</div><div class="text-xs text-gray-400">KYC</div></button></div>
+            <div class="space-y-1"><a href="#" class="flex items-center justify-between p-3"><span class="text-gray-800">Equipe</span><i class="fa-solid fa-chevron-right text-gray-400"></i></a><a href="#" class="flex items-center justify-between p-3"><span class="text-gray-800">Endereço</span><i class="fa-solid fa-chevron-right text-gray-400"></i></a><a href="#" class="flex items-center justify-between p-3"><span class="text-gray-800">Perfil de companhia</span><i class="fa-solid fa-chevron-right text-gray-400"></i></a><a href="#" class="flex items-center justify-between p-3"><span class="text-gray-800">Licença regulatória</span><i class="fa-solid fa-chevron-right text-gray-400"></i></a></div>
+        </div>
+        <div class="p-4"><button id="logoutBtn" class="w-full py-3 border rounded-xl text-gray-800">sair</button></div>
+    </div>
+    <script>(function(){ if(!localStorage.getItem('authUser')){ window.location.replace('register.html'); } })(); const gridBtn=document.getElementById('gridMenuBtn'),menuEl=document.getElementById('profileMenu'),menuBackBtn=document.getElementById('menuBackBtn'),userNameEl=document.getElementById('menuUserName'),logoutBtn=document.getElementById('logoutBtn'); gridBtn?.addEventListener('click',function(){ const u=localStorage.getItem('authUser'); userNameEl.textContent=u?u:'Guest'; menuEl.classList.remove('hidden'); }); menuBackBtn?.addEventListener('click',function(){ menuEl.classList.add('hidden'); }); logoutBtn?.addEventListener('click',function(){ localStorage.removeItem('authUser'); window.location.href='login.html'; });</script>
+</body>
+</html>

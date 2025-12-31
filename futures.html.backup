@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitsafe - Futures</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #ffffff; }
+        .text-green-custom { color: #0ECB81; }
+        .bg-green-custom { background-color: #0ECB81; }
+        .text-red-custom { color: #F6465D; }
+        .bg-red-custom { background-color: #F6465D; }
+        .text-yellow-custom { color: #F0B90B; }
+        .bg-yellow-custom { background-color: #ffb11a; }
+        .bottom-nav-item.active { color: #1f2937; }
+        .bottom-nav-item { color: #9ca3af; }
+        .chart-grid-line { stroke: #f3f4f6; stroke-width: 1; }
+        .ma-line-5 { stroke: #fbbf24; stroke-width: 1.5; fill: none; }
+        .ma-line-10 { stroke: #a78bfa; stroke-width: 1.5; fill: none; }
+        .ma-line-30 { stroke: #60a5fa; stroke-width: 1.5; fill: none; }
+        .price-line { stroke: #3b82f6; stroke-width: 2; fill: none; }
+        .price-area { fill: rgba(59, 130, 246, 0.1); }
+    </style>
+</head>
+<body class="pb-20 max-w-md mx-auto bg-white min-h-screen shadow-lg overflow-x-hidden flex flex-col relative">
+    <div class="px-4 pt-4 pb-2 flex items-center border-b border-gray-100">
+        <div class="mr-6 border-b-2 border-yellow-custom pb-1 font-bold text-gray-800 text-lg">Fast</div>
+        <div class="pb-1 font-medium text-gray-400 text-lg">Perpetual</div>
+    </div>
+    <div class="px-4 py-3 flex justify-between items-start relative">
+        <div>
+            <div class="flex items-center mb-1">
+                <button id="pairTrigger" class="flex items-center">
+                    <h1 id="pairName" class="text-xl font-bold text-gray-800 mr-2">BTC/USDT</h1>
+                    <i class="fa-solid fa-caret-down text-gray-800 text-xs"></i>
+                </button>
+            </div>
+            <div id="pairPrice" class="text-3xl font-bold text-green-custom mb-1">88294.30</div>
+            <div class="text-sm text-gray-500 font-medium"><span id="pairUsd">$88253.11</span> <span class="text-green-custom ml-1">+1.63%</span></div>
+        </div>
+        <div class="text-[10px] text-gray-500 space-y-1 text-right min-w-[100px]">
+            <div class="flex justify-between"><span>24h High</span><span class="text-gray-800">89374.60</span></div>
+            <div class="flex justify-between"><span>24h Low</span><span class="text-gray-800">86651.90</span></div>
+            <div class="flex justify-between"><span>Turnover(BTC)</span><span class="text-gray-800">145875.746</span></div>
+            <div class="flex justify-between"><span>Volume(USDT)</span><span class="text-gray-800">128.28B</span></div>
+        </div>
+        <div id="pairDropdown" class="hidden absolute top-12 left-4 z-40 bg-white border rounded-xl shadow-lg w-40">
+            <button class="w-full text-left px-3 py-2 hover:bg-gray-50" data-symbol="BTC/USDT">BTC/USDT</button>
+            <button class="w-full text-left px-3 py-2 hover:bg-gray-50" data-symbol="ETH/USDT">ETH/USDT</button>
+            <button class="w-full text-left px-3 py-2 hover:bg-gray-50" data-symbol="LTC/USDT">LTC/USDT</button>
+            <button class="w-full text-left px-3 py-2 hover:bg-gray-50" data-symbol="XRP/USDT">XRP/USDT</button>
+            <button class="w-full text-left px-3 py-2 hover:bg-gray-50" data-symbol="DOGE/USDT">DOGE/USDT</button>
+            <button class="w-full text-left px-3 py-2 hover:bg-gray-50" data-symbol="SOL/USDT">SOL/USDT</button>
+        </div>
+    </div>
+    <div class="px-4 py-2 flex justify-between text-xs text-gray-400 border-b border-gray-100 items-center">
+        <span class="bg-gray-900 text-white px-2 py-0.5 rounded font-bold">TIME</span><span>1M</span><span>5M</span><span>15M</span><span>30M</span><span>1H</span><span>1D</span>
+    </div>
+    <div class="flex-1 relative overflow-hidden">
+        <div class="absolute top-2 left-4 flex space-x-2 text-[8px]"><span class="text-gray-300">MA(5,10,30,60)</span><span class="text-yellow-500">MA5: 88,281.78</span><span class="text-purple-400">MA10: 88,283.50</span><span class="text-blue-400">MA30: 88,253.48</span></div>
+        <svg viewBox="0 0 400 300" class="w-full h-full" preserveAspectRatio="none">
+            <line x1="0" y1="50" x2="400" y2="50" class="chart-grid-line" />
+            <line x1="0" y1="100" x2="400" y2="100" class="chart-grid-line" />
+            <line x1="0" y1="150" x2="400" y2="150" class="chart-grid-line" />
+            <line x1="0" y1="200" x2="400" y2="200" class="chart-grid-line" />
+            <line x1="0" y1="250" x2="400" y2="250" class="chart-grid-line" />
+            <path d="M0,150 L20,130 L40,160 L60,155 L80,120 L100,135 L120,80 L130,160 L140,120 L160,140 L180,135 L200,90 L220,110 L240,80 L260,100 L280,70 L300,110 L320,70 L340,130 L360,80 L380,60 L380,300 L0,300 Z" class="price-area" />
+            <polyline points="0,140 40,150 80,110 120,90 160,130 200,80 240,90 280,60 320,80 360,50 400,60" class="ma-line-5" />
+            <polyline points="0,160 40,170 80,140 120,130 160,150 200,120 240,110 280,90 320,100 360,80 400,90" class="ma-line-10" />
+            <polyline points="0,180 40,190 80,200 120,210 160,180 200,150 240,140 280,130 320,120 360,110 400,100" class="ma-line-30" />
+            <polyline points="0,150 20,130 40,160 60,155 80,120 100,135 120,80 130,160 140,120 160,140 180,135 200,90 220,110 240,80 260,100 280,70 300,110 320,70 340,130 360,80 380,60" class="price-line" />
+            <line x1="0" y1="60" x2="380" y2="60" style="stroke: #0ECB81; stroke-width: 1; stroke-dasharray: 4;" />
+            <circle cx="380" cy="60" r="4" fill="#3b82f6" stroke="white" stroke-width="2" />
+            <rect x="360" y="50" width="40" height="20" fill="#0ECB81" rx="2" />
+            <text x="365" y="64" fill="white" font-size="10" font-weight="bold">88,294</text>
+        </svg>
+        <div class="absolute top-0 right-0 h-full flex flex-col justify-between py-8 text-[9px] text-gray-400 pr-1 pointer-events-none"><span>88,320.00</span><span>88,300.00</span><span>88,280.00</span><span>88,260.00</span><span>88,240.00</span><span>88,220.00</span><span>88,200.00</span><span>88,180.00</span><span>88,160.00</span></div>
+    </div>
+    <div class="h-48 border-t border-gray-200 relative">
+        <div class="flex text-[8px] px-4 py-1 space-x-2"><span class="text-gray-300">VOL(5,10,20)</span><span class="text-yellow-500">MA5: 29.79</span><span class="text-green-custom">VOLUME: 17.17</span></div>
+        <div class="h-20 px-4 flex items-end justify-between space-x-1 border-b border-gray-100 pb-1">
+            <div class="w-2 h-10 bg-red-custom opacity-70"></div><div class="w-2 h-6 bg-green-custom opacity-70"></div><div class="w-2 h-14 bg-red-custom opacity-70"></div><div class="w-2 h-4 bg-green-custom opacity-70"></div><div class="w-2 h-8 bg-green-custom opacity-70"></div><div class="w-2 h-12 bg-red-custom opacity-70"></div><div class="w-2 h-5 bg-green-custom opacity-70"></div><div class="w-2 h-16 bg-green-custom opacity-70"></div><div class="w-2 h-3 bg-red-custom opacity-70"></div><div class="w-2 h-9 bg-green-custom opacity-70"></div><div class="w-2 h-11 bg-red-custom opacity-70"></div><div class="w-2 h-7 bg-green-custom opacity-70"></div><div class="w-2 h-15 bg-red-custom opacity-70"></div><div class="w-2 h-4 bg-green-custom opacity-70"></div><div class="w-2 h-10 bg-red-custom opacity-70"></div><div class="w-2 h-6 bg-green-custom opacity-70"></div><div class="w-2 h-12 bg-red-custom opacity-70"></div><div class="w-2 h-8 bg-green-custom opacity-70"></div><div class="w-2 h-5 bg-red-custom opacity-70"></div><div class="w-2 h-9 bg-green-custom opacity-70"></div>
+        </div>
+        <div class="flex text-[8px] px-4 py-1 space-x-2"><span class="text-gray-300">MACD(12,26,9)</span><span class="text-yellow-500">DIF: 15.83</span><span class="text-purple-400">DEA: 15.97</span><span class="text-red-custom">MACD: -0.28</span></div>
+        <div class="h-16 px-4 flex items-center justify-center relative">
+            <div class="absolute w-full h-[1px] bg-gray-200"></div>
+            <div class="flex items-center justify-between w-full h-full pt-4"><div class="w-1 h-2 bg-green-custom"></div><div class="w-1 h-3 bg-green-custom"></div><div class="w-1 h-1 bg-red-custom"></div><div class="w-1 h-4 bg-red-custom"></div><div class="w-1 h-2 bg-red-custom"></div><div class="w-1 h-5 bg-green-custom"></div><div class="w-1 h-3 bg-green-custom"></div><div class="w-1 h-2 bg-red-custom"></div><div class="w-1 h-4 bg-green-custom"></div><div class="w-1 h-6 bg-green-custom"></div><div class="w-1 h-3 bg-red-custom"></div><div class="w-1 h-2 bg-green-custom"></div></div>
+            <svg class="absolute top-0 left-0 w-full h-full" preserveAspectRatio="none"><polyline points="0,40 50,35 100,45 150,30 200,40 250,35 300,45 350,40" fill="none" stroke="#fbbf24" stroke-width="1" /><polyline points="0,42 50,38 100,42 150,35 200,42 250,38 300,42 350,42" fill="none" stroke="#a78bfa" stroke-width="1" /></svg>
+        </div>
+    </div>
+    <div class="fixed bottom-16 left-0 right-0 px-4 flex gap-4 z-30 max-w-md mx-auto bg-white pb-4 pt-2">
+        <button id="btnLong" class="flex-1 bg-green-custom text-white py-3 rounded-xl font-bold shadow-lg">Open long</button>
+        <button id="btnShort" class="flex-1 bg-red-custom text-white py-3 rounded-xl font-bold shadow-lg">Open short</button>
+    </div>
+    <div id="orderModal" class="hidden fixed inset-0 z-50 bg-black/40 flex items-end justify-center">
+        <div class="bg-white w-full max-w-md rounded-t-2xl p-5">
+            <div class="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-4"></div>
+            <div class="flex items-center justify-between mb-4"><div class="text-lg font-bold text-gray-800">Order confirmation</div><i class="fa-regular fa-credit-card text-gray-500"></i></div>
+            <div class="grid grid-cols-2 gap-2 text-sm mb-4">
+                <div><div class="text-gray-400">Name</div><div id="modalPair" class="font-semibold text-gray-800">BTC/USDT</div></div>
+                <div class="text-right"><div class="text-gray-400">Direction</div><div id="modalDirection" class="font-semibold text-gray-800">Open long</div></div>
+                <div><div class="text-gray-400">Current Price</div><div id="modalPrice" class="font-semibold text-gray-800">88294.30</div></div>
+                <div class="text-right"><div class="text-gray-400">Fee</div><div class="font-semibold text-gray-800">0.1%</div></div>
+            </div>
+            <div class="mb-4"><div class="text-sm text-gray-500 mb-2">Expiration Time</div>
+                <div class="grid grid-cols-4 gap-2">
+                    <button class="expBtn border rounded-xl p-2 text-center font-semibold" data-secs="30" data-pct="25">30S<br><span class="text-gray-400 font-normal">25%</span></button>
+                    <button class="expBtn border rounded-xl p-2 text-center font-semibold" data-secs="60" data-pct="50">60S<br><span class="text-gray-400 font-normal">50%</span></button>
+                    <button class="expBtn border rounded-xl p-2 text-center font-semibold" data-secs="120" data-pct="75">120S<br><span class="text-gray-400 font-normal">75%</span></button>
+                    <button class="expBtn border rounded-xl p-2 text-center font-semibold" data-secs="300" data-pct="100">300S<br><span class="text-gray-400 font-normal">100%</span></button>
+                </div>
+            </div>
+            <div class="mb-4"><div class="text-sm text-gray-500 mb-1">Amount (≥ 10)</div><input id="modalAmount" type="number" min="10" class="w-full px-3 py-2 border rounded-lg" placeholder="Amount"></div>
+            <div class="mb-2"><div class="text-sm text-gray-500 mb-1">Currency</div><div class="w-full px-3 py-2 border rounded-lg bg-gray-50">USDT</div></div>
+            <div class="text-xs text-gray-400 mb-4">Available: 0 USDT • Trial Fund: 0 USDT</div>
+            <button id="modalConfirm" class="w-full py-3 bg-yellow-custom text-gray-900 rounded-xl font-bold">Confirm</button>
+            <button id="modalClose" class="w-full py-2 mt-2 text-sm text-gray-500">Cancel</button>
+        </div>
+    </div>
+    <div id="countdownModal" class="hidden fixed inset-0 z-50 bg-black/40 flex items-end justify-center">
+        <div class="bg-white w-full max-w-md rounded-t-2xl p-5">
+            <div class="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-4"></div>
+            <div id="cdWheel" class="flex items-center justify-center mb-3">
+                <div class="relative w-28 h-28">
+                    <svg viewBox="0 0 100 100" class="absolute top-0 left-0 w-28 h-28">
+                        <circle cx="50" cy="50" r="45" stroke="#e5e7eb" stroke-width="8" fill="none"></circle>
+                        <circle id="cdCircle" cx="50" cy="50" r="45" stroke="#f59e0b" stroke-width="8" fill="none" stroke-linecap="round" transform="rotate(-90 50 50)" stroke-dasharray="282.743" stroke-dashoffset="282.743"></circle>
+                    </svg>
+                    <div id="cdText" class="absolute inset-0 flex items-center justify-center text-xl font-bold text-gray-800">0.0</div>
+                </div>
+            </div>
+            <div id="cdBigResult" class="hidden text-2xl font-bold text-center mb-2">0 USDT</div>
+            <div class="text-center font-semibold text-gray-800 mb-2">Order Information</div>
+            <div class="grid grid-cols-2 gap-2 text-sm mb-4">
+                <div><div class="text-gray-400">Pairs</div><div id="cdPair" class="font-semibold text-gray-800">BTC/USDT</div></div>
+                <div class="text-right"><div class="text-gray-400">Transaction Price</div><div id="cdTxn" class="font-semibold text-gray-800">0 USDT</div></div>
+                <div><div class="text-gray-400">Buy Price</div><div id="cdBuy" class="font-semibold text-gray-800">0.00</div></div>
+                <div class="text-right"><div class="text-gray-400">Direction</div><div id="cdDir" class="font-semibold text-gray-800">Open long</div></div>
+                <div><div id="cdPriceLabel" class="text-gray-400">Estimated income</div><div id="cdIncome" class="font-semibold text-green-600">0 USDT</div></div>
+                <div class="text-right"><div class="text-gray-400">Settlement Price</div><div id="cdSettle" class="font-semibold text-gray-800">0.00</div></div>
+            </div>
+            <div class="flex gap-3"><button id="cdBack" class="flex-1 py-3 border rounded-xl text-gray-800">Back</button><button id="cdContinue" class="flex-1 py-3 bg-yellow-custom text-gray-900 rounded-xl font-bold">Continue</button></div>
+        </div>
+    </div>
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2 px-6 flex justify-between items-center z-20 max-w-md mx-auto">
+        <a href="index.html" class="flex flex-col items-center bottom-nav-item cursor-pointer"><i class="fa-solid fa-house text-xl mb-1"></i><span class="text-[10px]">Home Page</span></a>
+        <a href="quotes.html" class="flex flex-col items-center bottom-nav-item cursor-pointer"><i class="fa-solid fa-chart-simple text-xl mb-1"></i><span class="text-[10px]">Quotes</span></a>
+        <a href="transaction.html" class="relative top-6 opacity-90"><div class="w-12 h-12 bg-gray-900 rounded-full flex items-center justify-center shadow-lg border-4 border-white"><i class="fa-solid fa-arrow-right-arrow-left text-white text-lg transform rotate-45"></i></div><div class="text-center mt-1"><span class="text-[10px] text-gray-500">Transaction</span></div></a>
+        <div class="flex flex-col items-center bottom-nav-item active text-gray-900 cursor-pointer"><i class="fa-solid fa-file-contract text-xl mb-1"></i><span class="text-[10px]">Futures</span></div>
+        <a href="assets.html" class="flex flex-col items-center bottom-nav-item cursor-pointer"><i class="fa-solid fa-wallet text-xl mb-1"></i><span class="text-[10px]">Assets</span></a>
+    </div>
+    <script>
+        const prices={'BTC/USDT':88294.30,'ETH/USDT':2982.34,'LTC/USDT':76.53,'XRP/USDT':1.9050,'DOGE/USDT':0.13081,'SOL/USDT':112.35};
+        let selectedPair='BTC/USDT';
+        const pairTrigger=document.getElementById('pairTrigger'),pairDropdown=document.getElementById('pairDropdown'),pairName=document.getElementById('pairName'),pairPrice=document.getElementById('pairPrice'),pairUsd=document.getElementById('pairUsd');
+        pairTrigger.addEventListener('click',()=>{ pairDropdown.classList.toggle('hidden'); });
+        pairDropdown.querySelectorAll('button').forEach(b=>{ b.addEventListener('click',()=>{ selectedPair=b.dataset.symbol; const p=prices[selectedPair]||0; pairName.textContent=selectedPair; pairPrice.textContent=p.toFixed(2); pairUsd.textContent='$'+p.toFixed(2); pairDropdown.classList.add('hidden'); }); });
+        const orderModal=document.getElementById('orderModal'),modalPair=document.getElementById('modalPair'),modalDirection=document.getElementById('modalDirection'),modalPrice=document.getElementById('modalPrice'),modalAmount=document.getElementById('modalAmount'),modalConfirm=document.getElementById('modalConfirm'),modalClose=document.getElementById('modalClose');
+        let expSelection={secs:30,pct:25};
+        function openOrder(dir){ modalPair.textContent=selectedPair; modalDirection.textContent=dir==='long'?'Open long':'Open short'; const p=prices[selectedPair]||0; modalPrice.textContent=p.toFixed(2); orderModal.classList.remove('hidden'); }
+        document.getElementById('btnLong').addEventListener('click',()=>openOrder('long'));
+        document.getElementById('btnShort').addEventListener('click',()=>openOrder('short'));
+        document.querySelectorAll('.expBtn').forEach(btn=>{ btn.addEventListener('click',()=>{ document.querySelectorAll('.expBtn').forEach(b=>b.classList.remove('bg-gray-900','text-white')); btn.classList.add('bg-gray-900','text-white'); expSelection={secs:parseInt(btn.dataset.secs,10),pct:parseInt(btn.dataset.pct,10)}; }); });
+        const cdModal=document.getElementById('countdownModal'),cdCircle=document.getElementById('cdCircle'),cdText=document.getElementById('cdText'),cdPair=document.getElementById('cdPair'),cdTxn=document.getElementById('cdTxn'),cdBuy=document.getElementById('cdBuy'),cdDir=document.getElementById('cdDir'),cdSettle=document.getElementById('cdSettle'),cdIncome=document.getElementById('cdIncome'),cdBack=document.getElementById('cdBack'),cdContinue=document.getElementById('cdContinue'),cdWheel=document.getElementById('cdWheel'),cdBigResult=document.getElementById('cdBigResult'),cdPriceLabel=document.getElementById('cdPriceLabel');
+        let cdTimer=null;
+        function startCountdown(secs,amt,pct,dir){ const p=prices[selectedPair]||0; cdPair.textContent=selectedPair; cdTxn.textContent=amt.toFixed(2)+' USDT'; cdBuy.textContent=p.toFixed(2); cdDir.textContent=dir==='long'?'Open long':'Open short'; cdSettle.textContent=p.toFixed(2); cdIncome.textContent=(amt*pct/100).toFixed(2)+' USDT'; cdIncome.classList.remove('text-red-600','text-green-600'); cdIncome.classList.add('text-green-600'); cdWheel.classList.remove('hidden'); cdBigResult.classList.add('hidden'); cdPriceLabel.textContent='Estimated income'; cdBigResult.classList.remove('text-red-600','text-green-600'); cdModal.classList.remove('hidden'); const total=secs*10; let t=total; const circumference=2*Math.PI*45; cdCircle.style.strokeDasharray=circumference.toFixed(3); cdCircle.style.strokeDashoffset=circumference.toFixed(3); cdText.textContent=(t/10).toFixed(1); if(cdTimer) clearInterval(cdTimer); cdTimer=setInterval(()=>{ t-=1; if(t<=0){ clearInterval(cdTimer); const win=Math.random()<0.5; if(win){ const payout=amt+(amt*pct/100); cdBigResult.textContent=payout.toFixed(2)+' USDT'; cdIncome.textContent=(amt*pct/100).toFixed(2)+' USDT'; cdBigResult.classList.remove('text-red-600'); cdBigResult.classList.add('text-green-600'); cdIncome.classList.remove('text-red-600'); cdIncome.classList.add('text-green-600'); } else { cdBigResult.textContent='-'+amt.toFixed(2)+' USDT'; cdIncome.textContent=amt.toFixed(2)+' USDT'; cdBigResult.classList.remove('text-green-600'); cdBigResult.classList.add('text-red-600'); cdIncome.classList.remove('text-green-600'); cdIncome.classList.add('text-red-600'); } cdText.textContent='0.0'; cdCircle.style.strokeDashoffset='0'; cdWheel.classList.add('hidden'); cdBigResult.classList.remove('hidden'); cdPriceLabel.textContent='Actual Income'; const base=prices[selectedPair]||0; const drift=base*(Math.random()-0.5)*0.0005; cdSettle.textContent=(base+drift).toFixed(2); return; } cdText.textContent=(t/10).toFixed(1); const progress=(total-t)/total; cdCircle.style.strokeDashoffset=(circumference*(1-progress)).toFixed(3); },100); }
+        modalConfirm.addEventListener('click',()=>{ const amt=parseFloat(modalAmount.value); if(!amt||amt<10){ alert('Enter amount ≥ 10'); return; } orderModal.classList.add('hidden'); startCountdown(expSelection.secs,amt,expSelection.pct,modalDirection.textContent.includes('long')?'long':'short'); modalAmount.value=''; });
+        modalClose.addEventListener('click',()=>{ orderModal.classList.add('hidden'); });
+        cdBack.addEventListener('click',()=>{ if(cdTimer) clearInterval(cdTimer); cdModal.classList.add('hidden'); orderModal.classList.remove('hidden'); });
+        cdContinue.addEventListener('click',()=>{ cdModal.classList.add('hidden'); });
+    </script>
+</body>
+</html>

@@ -60,6 +60,13 @@
         <div class="pb-1 font-medium text-gray-400 text-lg">Perpetual</div>
     </div>
 
+    <!-- Market Coins Selection Bar (Horizontal Scroll) -->
+    <div class="px-4 py-2 border-b border-gray-100 overflow-x-auto whitespace-nowrap scrollbar-hide">
+        <div class="flex space-x-4" id="marketCoinList">
+            <!-- Items will be dynamically populated -->
+        </div>
+    </div>
+
     <!-- Ticker Info -->
     <div class="px-4 py-3 flex justify-between items-start relative">
         <div>
@@ -523,6 +530,28 @@
     const chatActions = ['bought', 'sold'];
     const chatNames = ['User***88', 'Trader_01', 'MoonWalker', 'CryptoKing', 'Alice_22', 'Bob_99', 'HODLer', 'SatoshiFan'];
     
+    // --- Market Coin Selection Logic ---
+    const marketCoinList = document.getElementById('marketCoinList');
+    
+    function renderMarketCoins() {
+        marketCoinList.innerHTML = '';
+        supportedPairs.forEach(pair => {
+            const price = prices[pair] ? prices[pair].toFixed(2) : '---';
+            const isActive = pair === selectedPair;
+            const item = document.createElement('div');
+            item.className = `inline-flex flex-col items-center cursor-pointer ${isActive ? 'opacity-100' : 'opacity-60 hover:opacity-100'}`;
+            item.onclick = () => switchPair(pair);
+            item.innerHTML = `
+                <span class="text-xs font-bold ${isActive ? 'text-gray-800' : 'text-gray-500'}">${pair.split('/')[0]}</span>
+                <span class="text-[10px] ${isActive ? 'text-green-custom' : 'text-gray-400'}">${price}</span>
+            `;
+            marketCoinList.appendChild(item);
+        });
+    }
+
+    // Update market coins every second to reflect price changes
+    setInterval(renderMarketCoins, 1000);
+
     function addChatItem() {
         const pair = supportedPairs[Math.floor(Math.random() * supportedPairs.length)];
         const action = chatActions[Math.floor(Math.random() * chatActions.length)];

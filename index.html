@@ -21,6 +21,12 @@
         .bg-green-custom {
             background-color: #0ECB81;
         }
+        .text-red-custom {
+            color: #F6465D;
+        }
+        .bg-red-custom {
+            background-color: #F6465D;
+        }
         .text-yellow-custom {
             color: #F0B90B;
         }
@@ -347,9 +353,9 @@
     </div>
 
     <!-- Crypto List -->
-    <div class="px-4 space-y-6 pb-4">
+    <div class="px-4 space-y-6 pb-4" id="cryptoList">
         <!-- Item 1: LTC -->
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between" data-symbol="ltcusdt">
             <div class="flex items-center w-1/3">
                 <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white mr-2 text-xs font-bold">L</div>
                 <div>
@@ -357,21 +363,21 @@
                         <span class="font-bold text-gray-800 text-sm">LTC</span>
                         <span class="text-xs text-gray-400 ml-1">/USDT</span>
                     </div>
-                    <div class="text-xs text-gray-400">703603.39</div>
+                    <div class="text-xs text-gray-400" id="list-ltc-volume">--</div>
                 </div>
             </div>
-            <div class="w-1/3 text-center font-bold text-gray-800">
-                76.53
+            <div class="w-1/3 text-center font-bold text-gray-800" id="list-ltc-price">
+                --
             </div>
             <div class="w-1/3 flex justify-end">
-                <div class="bg-green-custom text-white px-3 py-1.5 rounded text-xs font-bold w-20 text-center">
-                    +0.86%
+                <div id="list-ltc-change" class="bg-gray-200 text-gray-800 px-3 py-1.5 rounded text-xs font-bold w-20 text-center">
+                    --%
                 </div>
             </div>
         </div>
 
         <!-- Item 2: BCH -->
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between" data-symbol="bchusdt">
             <div class="flex items-center w-1/3">
                 <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white mr-2 text-xs font-bold">B</div>
                 <div>
@@ -379,21 +385,21 @@
                         <span class="font-bold text-gray-800 text-sm">BCH</span>
                         <span class="text-xs text-gray-400 ml-1">/USDT</span>
                     </div>
-                    <div class="text-xs text-gray-400">92873.65</div>
+                    <div class="text-xs text-gray-400" id="list-bch-volume">--</div>
                 </div>
             </div>
-            <div class="w-1/3 text-center font-bold text-gray-800">
-                602.4
+            <div class="w-1/3 text-center font-bold text-gray-800" id="list-bch-price">
+                --
             </div>
             <div class="w-1/3 flex justify-end">
-                <div class="bg-green-custom text-white px-3 py-1.5 rounded text-xs font-bold w-20 text-center">
-                    +2.08%
+                <div id="list-bch-change" class="bg-gray-200 text-gray-800 px-3 py-1.5 rounded text-xs font-bold w-20 text-center">
+                    --%
                 </div>
             </div>
         </div>
 
         <!-- Item 3: DOGE -->
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between" data-symbol="dogeusdt">
             <div class="flex items-center w-1/3">
                 <div class="w-8 h-8 rounded-full bg-yellow-500 flex items-center justify-center text-white mr-2 text-xs font-bold">D</div>
                 <div>
@@ -401,21 +407,21 @@
                         <span class="font-bold text-gray-800 text-sm">DOGE</span>
                         <span class="text-xs text-gray-400 ml-1">/USDT</span>
                     </div>
-                    <div class="text-xs text-gray-400">15388555</div>
+                    <div class="text-xs text-gray-400" id="list-doge-volume">--</div>
                 </div>
             </div>
-            <div class="w-1/3 text-center font-bold text-gray-800">
-                0.13081
+            <div class="w-1/3 text-center font-bold text-gray-800" id="list-doge-price">
+                --
             </div>
             <div class="w-1/3 flex justify-end">
-                <div class="bg-green-custom text-white px-3 py-1.5 rounded text-xs font-bold w-20 text-center">
-                    +3.70%
+                <div id="list-doge-change" class="bg-gray-200 text-gray-800 px-3 py-1.5 rounded text-xs font-bold w-20 text-center">
+                    --%
                 </div>
             </div>
         </div>
 
         <!-- Item 4: XRP -->
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between" data-symbol="xrpusdt">
             <div class="flex items-center w-1/3">
                 <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-white mr-2 text-xs font-bold">X</div>
                 <div>
@@ -423,15 +429,15 @@
                         <span class="font-bold text-gray-800 text-sm">XRP</span>
                         <span class="text-xs text-gray-400 ml-1">/USDT</span>
                     </div>
-                    <div class="text-xs text-gray-400">3770401</div>
+                    <div class="text-xs text-gray-400" id="list-xrp-volume">--</div>
                 </div>
             </div>
-            <div class="w-1/3 text-center font-bold text-gray-800">
-                1.9050
+            <div class="w-1/3 text-center font-bold text-gray-800" id="list-xrp-price">
+                --
             </div>
             <div class="w-1/3 flex justify-end">
-                <div class="bg-green-custom text-white px-3 py-1.5 rounded text-xs font-bold w-20 text-center">
-                    +3.52%
+                <div id="list-xrp-change" class="bg-gray-200 text-gray-800 px-3 py-1.5 rounded text-xs font-bold w-20 text-center">
+                    --%
                 </div>
             </div>
         </div>
@@ -743,6 +749,86 @@
               }
             } catch(e) { alert(e.message); }
         });
+    </script>
+    <!-- Binance WebSocket for Real-time Prices -->
+    <script>
+        (function() {
+            const streams = [
+                'btcusdt@ticker',
+                'ethusdt@ticker',
+                'xrpusdt@ticker',
+                'ltcusdt@ticker',
+                'bchusdt@ticker',
+                'dogeusdt@ticker'
+            ];
+            const wsUrl = `wss://stream.binance.com:9443/stream?streams=${streams.join('/')}`;
+            const ws = new WebSocket(wsUrl);
+
+            ws.onmessage = (event) => {
+                const message = JSON.parse(event.data);
+                const stream = message.stream;
+                const data = message.data;
+                const symbol = data.s.toLowerCase(); // e.g., "btcusdt"
+                const price = parseFloat(data.c).toFixed(data.c < 1 ? 5 : 2); // Current price
+                const percentChange = parseFloat(data.P).toFixed(2); // 24h % change
+                const volume = parseFloat(data.v).toFixed(2); // 24h volume
+                const isPositive = parseFloat(data.P) >= 0;
+
+                // Helper to update Ticker elements (Top)
+                const updateTicker = (coin) => {
+                    const priceEl = document.getElementById(`ticker-${coin}-price`);
+                    const changeEl = document.getElementById(`ticker-${coin}-change`);
+                    
+                    if (priceEl && changeEl) {
+                        priceEl.textContent = price;
+                        changeEl.textContent = `${isPositive ? '+' : ''}${percentChange}%`;
+                        
+                        // Update colors
+                        priceEl.classList.remove('text-green-custom', 'text-red-custom');
+                        changeEl.classList.remove('text-green-custom', 'text-red-custom');
+                        
+                        priceEl.classList.add(isPositive ? 'text-green-custom' : 'text-red-custom');
+                        changeEl.classList.add(isPositive ? 'text-green-custom' : 'text-red-custom');
+                    }
+                };
+
+                // Helper to update List elements (Bottom)
+                const updateList = (coin) => {
+                    const priceEl = document.getElementById(`list-${coin}-price`);
+                    const changeEl = document.getElementById(`list-${coin}-change`);
+                    const volEl = document.getElementById(`list-${coin}-volume`);
+                    
+                    if (priceEl) priceEl.textContent = price;
+                    if (volEl) volEl.textContent = volume;
+                    
+                    if (changeEl) {
+                        changeEl.textContent = `${isPositive ? '+' : ''}${percentChange}%`;
+                        changeEl.classList.remove('bg-green-custom', 'bg-red-custom', 'bg-gray-200', 'text-gray-800');
+                        changeEl.classList.add('text-white', isPositive ? 'bg-green-custom' : 'bg-red-custom');
+                    }
+                };
+
+                // Mapping based on symbol
+                if (symbol === 'btcusdt') {
+                    updateTicker('btc');
+                } else if (symbol === 'ethusdt') {
+                    updateTicker('eth');
+                } else if (symbol === 'xrpusdt') {
+                    updateTicker('xrp');
+                    updateList('xrp');
+                } else if (symbol === 'ltcusdt') {
+                    updateList('ltc');
+                } else if (symbol === 'bchusdt') {
+                    updateList('bch');
+                } else if (symbol === 'dogeusdt') {
+                    updateList('doge');
+                }
+            };
+
+            ws.onerror = (error) => {
+                console.error('Binance WebSocket Error:', error);
+            };
+        })();
     </script>
 </body>
 </html>
